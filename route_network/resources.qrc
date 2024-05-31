@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/plugins/route_network" >
+        <file>icon.png</file>
+    </qresource>
+</RCC>

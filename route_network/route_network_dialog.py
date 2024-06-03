@@ -625,8 +625,9 @@ class RouteNetworkDialog(QtWidgets.QDialog, FORM_CLASS):
             vectors = [vector for vector in vectors if vector.geometryType() == QgsWkbTypes.LineGeometry]
             if len(vectors) == 1:
                 features = list(vectors[0].getFeatures())[route_numbers[index]].attributes()
-                zagr += int(features[1])
-                passp += int(features[6])
+                if features[1] != 'None' and features[6] != 'None':
+                    zagr += int(features[1])
+                    passp += int(features[6])
         return {
             'sum_zagr': zagr,
             'sum_passp': passp,

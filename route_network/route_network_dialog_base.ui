@@ -95,7 +95,7 @@
          <item>
           <widget class="QPushButton" name="intersection_button">
            <property name="text">
-            <string>PushButton</string>
+            <string>Анализ общих перегонов маршрута</string>
            </property>
           </widget>
          </item>

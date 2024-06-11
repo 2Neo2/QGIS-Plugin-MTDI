@@ -9,6 +9,7 @@ from .tkp import TKP_API
 from .rnis import RnisAPI
 
 class AsyncNetworkVariants():
+
     def __init__(self, dialog, filepath, date, time, company, isSOBOP, delay=5):
         self.filepath = filepath
         self.date = str(date)
@@ -26,7 +27,6 @@ class AsyncNetworkVariants():
         self.password_tkp = 'atQ495Lp!'
         self.login_rnis = 'Karpenko'
         self.password_rnis = 'H7DneQW3'
-
 
 ######### RNIS #########
 
@@ -123,8 +123,9 @@ class AsyncNetworkVariants():
                     sobop_data.append({'reg': item['РЕГ НОМЕР'], 'data': data})
         return sobop_data
 
+
     async def get_zagr_passp(self, **d):
-        """Получаем инфо из СОБОП по типам оплаты: БК, СК, КОЛ-ВСЕГО"""
+        """"""
         async with self.tkp(self.login_tkp, self.password_tkp) as tkp:
             card = tkp.Card
             await card(3451)
@@ -137,6 +138,7 @@ class AsyncNetworkVariants():
             )
             data = await card.json
         return data
+
 
     async def get_workload_tkp(self, **d):
         """Получаем из СОБОП загруженность."""
@@ -548,13 +550,31 @@ class AsyncNetworkVariants():
         return df
 
 
-    async def fetch_sobop(self, geojson, reg, type_name):
+    async def fetch_sobop_by_hour(self, geojson, reg, type_name):
+        if int(reg) in (item['reg'] for item in self.sobop_data):
+            peregon_count = self.get_peregon_count(geojson)
+            data = [item['data'] for item in self.sobop_data if item['reg'] == int(reg)]
+            df = pd.DataFrame(data[0])
+            number = self.find_number_by_peregon_count(df, peregon_count, type_name)
+            df = df.where(df['Направление'] == type_name)
+            df = df.where(df['Номер'] == number).dropna()
+            if df.empty != True:
+                df = self.parse_df(df)
+                self.calculate_zagr_passp_by_peregons(geojson, df)
+        else:
+            for feature in geojson['features']:
+                if 'properties' in feature.keys():
+                    feature['properties']['zagr'] = 0
+                    feature['properties']['passp'] = 0
+
+
+    async def fetch_sobop_by_stop_point(self, geojson, reg, type_name):
         uuid = geojson['features'][0]['properties']['variant_uuid']
         data = await self.get_zagr_passp(route_type=type_name, var_uid=uuid, date=self.date)
         index = 0
-        passp = 0
         for item in data:
-            passp += item['Зашло всего'] - item['Вышло всего']
+            passp = 0
+            passp += abs(item['Зашло всего'] - item['Вышло всего'])
             feature = geojson['features'][index]
             if 'properties' in feature.keys():
                 if 'peregon' in feature['properties'].keys():
@@ -576,21 +596,6 @@ class AsyncNetworkVariants():
             geojson['features'][index]['properties']['kol_soc'] = item['Зашло СК']
             geojson['features'][index]['properties']['kol_kom'] = item['Зашло ком']
             index += 1
-        # if int(reg) in (item['reg'] for item in self.sobop_data):
-        #     peregon_count = self.get_peregon_count(geojson)
-        #     data = [item['data'] for item in self.sobop_data if item['reg'] == int(reg)]
-        #     df = pd.DataFrame(data[0])
-        #     number = self.find_number_by_peregon_count(df, peregon_count, type_name)
-        #     df = df.where(df['Направление'] == type_name)
-        #     df = df.where(df['Номер'] == number).dropna()
-        #     if df.empty != True:
-        #         df = self.parse_df(df)
-        #         self.calculate_zagr_passp_by_peregons(geojson, df)
-        # else:
-        #     for feature in geojson['features']:
-        #         if 'properties' in feature.keys():
-        #             feature['properties']['zagr'] = 0
-        #             feature['properties']['passp'] = 0
 
 
     def get_array_regs(self):
@@ -615,7 +620,8 @@ class AsyncNetworkVariants():
         geojson = self.get_geojson()
         busstop = {}
         b, geojson = self.update_feature_2(variant, geojson, 'forward_points', data_item)
-
+        print(reg)
+        
         if self.getStopPoint:
             if len(geojson['features']) != 0:
                 forward_points_sobop, reverse_points_sobop = await self.get_stop_point_data(date= self.date, uuid=geojson['features'][0]['properties']['variant_uuid'])
@@ -639,8 +645,10 @@ class AsyncNetworkVariants():
                     feature['geometry']['coordinates'] = b
                     geojson['features'].append(feature)
 
-            if self.isSOBOP:
-                await self.fetch_sobop(geojson, data_item['route_reg_number'], 'прямое')
+            if self.isSOBOP and self.getStopPoint == False:
+                await self.fetch_sobop_by_hour(geojson, data_item['route_reg_number'], 'прямое')
+            elif self.getStopPoint:
+                await self.fetch_sobop_by_stop_point(geojson, data_item['route_reg_number'], 'прямое')
 
             self.add_layer_to_project(geojson, f'№{number}-{name}-{reg}-прямое', f'forwards-{self.company}', stop_points=forward_points_sobop)
 
@@ -660,8 +668,11 @@ class AsyncNetworkVariants():
                     feature['geometry']['coordinates'] = b
                     geojson['features'].append(feature)
 
-            if self.isSOBOP:
-                self.fetch_sobop(geojson, data_item['route_reg_number'], 'обратное')
+            
+            if self.isSOBOP and self.getStopPoint == False:
+                await self.fetch_sobop_by_hour(geojson, data_item['route_reg_number'], 'обратное')
+            elif self.getStopPoint:
+                await self.fetch_sobop_by_stop_point(geojson, data_item['route_reg_number'], 'обратное')
 
             self.add_layer_to_project(geojson, f'№{number}-{name}-{reg}-обратное', f'reverses-{self.company}', stop_points=reverse_points_sobop)
 
@@ -670,9 +681,9 @@ class AsyncNetworkVariants():
         percent = 0
         regs = self.get_array_regs()
         route_list = await self.get_data_from_outfit_plan(regs)
-        if self.isSOBOP:
+        if self.isSOBOP and isStopPoint == False:
             self.sobop_data = await self.get_workload_tkp(date=self.date, time=self.time, array_regs=regs)
-        if isStopPoint:
+        elif isStopPoint:
             self.getStopPoint = True
         
         for route in route_list:

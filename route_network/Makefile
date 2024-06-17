@@ -50,7 +50,7 @@ UI_FILES = route_network_dialog_base.ui
 
 EXTRAS = metadata.txt icon.png
 
-EXTRA_DIRS = tkp rnis
+EXTRA_DIRS = tkp rnis jsonData
 
 COMPILED_RESOURCE_FILES = resources.py
 

@@ -72,6 +72,27 @@
        <item>
         <layout class="QVBoxLayout" name="verticalLayout">
          <item>
+          <widget class="QPushButton" name="jk_layer_button">
+           <property name="text">
+            <string>Загрузи слой ЖК</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="jd_layer_button">
+           <property name="text">
+            <string>Загрузи слой ЖД</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="population_layer_button">
+           <property name="text">
+            <string>Загрузи слой плотности населения</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QPushButton" name="button_dwnl">
            <property name="text">
             <string>Загрузи варианты движения по рег. номерам и дате</string>

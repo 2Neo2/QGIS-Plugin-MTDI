@@ -87,6 +87,9 @@ class RouteNetworkDialog(QtWidgets.QDialog, FORM_CLASS):
         self.expand_button.clicked.connect(self.expand_button_clicked)
         self.stop_point_button.clicked.connect(self.stop_point_button_clicked)
         self.intersection_button.clicked.connect(self.button_intersection_clicked)
+        self.jk_layer_button.clicked.connect(self.jk_layer_button_clicked)
+        self.jd_layer_button.clicked.connect(self.jd_layer_button_clicked)
+        self.population_layer_button.clicked.connect(self.population_layer_button_clicked)
 
         # Date.
         self.date_edit.setDate(QDate.currentDate())
@@ -675,10 +678,11 @@ class RouteNetworkDialog(QtWidgets.QDialog, FORM_CLASS):
                 line_points[index].x(),
                 line_points[index].y()
             ])
-            coordinates.append([
-                line_points[index + 1].x(),
-                line_points[index + 1].y()
-            ])
+            if index + 1 < len(line_points):
+                coordinates.append([
+                    line_points[index + 1].x(),
+                    line_points[index + 1].y()
+                ])
             feature = self.get_default_feature()
             feature['properties']['Перегон первого маршрута'] = data['peregon1']
             feature['properties']['Перегон второго маршрута'] = data['peregon2']
@@ -803,7 +807,57 @@ class RouteNetworkDialog(QtWidgets.QDialog, FORM_CLASS):
         new_layer_line = QgsVectorLayer(geojson_obj + "|geometrytype=LineString", 'Пересечение', "ogr")
         
         QgsProject.instance().addMapLayer(new_layer_line)
+    
+
+    def jk_layer_button_clicked(self):
+        json_file = 'C:\\Users\\DoroninIA\\Desktop\\QGIS\\QGIS-Plugin-MTDI-master\\route_network\\jsonData\\JK.geojson'
+        qml_file = 'C:\\Users\\DoroninIA\\Desktop\\QGIS\\QGIS-Plugin-MTDI-master\\route_network\\jsonData\\jk.qml'
+        group_name = 'Слой ЖК'
+
+        self.insert_file_layer_to_map(json_file, qml_file, group_name, 'ЖК')
+        
+
+    def jd_layer_button_clicked(self):
+        files = [
+            ('C:\\Users\\DoroninIA\\Desktop\\QGIS\\QGIS-Plugin-MTDI-master\\route_network\\jsonData\\d1.geojson',
+             'C:\\Users\\DoroninIA\\Desktop\\QGIS\\QGIS-Plugin-MTDI-master\\route_network\\jsonData\\d1.qml'),
+
+            ('C:\\Users\\DoroninIA\\Desktop\\QGIS\\QGIS-Plugin-MTDI-master\\route_network\\jsonData\\d2.geojson',
+             'C:\\Users\\DoroninIA\\Desktop\\QGIS\\QGIS-Plugin-MTDI-master\\route_network\\jsonData\\d2.qml'),
+
+            ('C:\\Users\\DoroninIA\\Desktop\\QGIS\\QGIS-Plugin-MTDI-master\\route_network\\jsonData\\d3.geojson',
+             'C:\\Users\\DoroninIA\\Desktop\\QGIS\\QGIS-Plugin-MTDI-master\\route_network\\jsonData\\d3.qml'),
+
+            ('C:\\Users\\DoroninIA\\Desktop\\QGIS\\QGIS-Plugin-MTDI-master\\route_network\\jsonData\\d4.geojson',
+             'C:\\Users\\DoroninIA\\Desktop\\QGIS\\QGIS-Plugin-MTDI-master\\route_network\\jsonData\\d4.qml')
+        ]
+        
+        group_name = 'Cлой ЖД'
+        index = 1
+        for file, style in files:
+            self.insert_file_layer_to_map(file, style, group_name, f'Д-{index}')
+            index += 1
 
 
-            
+    def population_layer_button_clicked(self):
+        json_file = 'C:\\Users\\DoroninIA\\Desktop\\QGIS\\QGIS-Plugin-MTDI-master\\route_network\\jsonData\\population.json'
+        qml_file = 'C:\\Users\\DoroninIA\\Desktop\\QGIS\\QGIS-Plugin-MTDI-master\\route_network\\jsonData\\population.qml'
+        group_name = 'Слой плотности населения'
+        self.insert_file_layer_to_map(json_file, qml_file, group_name, 'Плотность населения')
+
+
+    def insert_file_layer_to_map(self, json_file, qml_file, group_name, layer_name):
+        layer = QgsVectorLayer(json_file, layer_name, 'ogr')
+        layer.loadNamedStyle(qml_file)
+   
+        root = QgsProject.instance().layerTreeRoot()
+        group = next(
+            (child for child in root.children() if isinstance(child, QgsLayerTreeGroup) and child.name() == group_name),
+            None)
+        
+        if group is None:
+            group = root.addGroup(group_name)
+
+        QgsProject.instance().addMapLayer(layer, False)
+        group.insertChildNode(0, QgsLayerTreeLayer(layer))
 

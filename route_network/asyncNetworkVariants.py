@@ -110,10 +110,10 @@ class AsyncNetworkVariants():
             await card(3192)
 
             card.parameters_update (
-                date_from = d.get('date'),
-                date_to = d.get('date'),
-                # date_from = '2024-03-01',
-                # date_to = '2024-03-31',
+                # date_from = d.get('date'),
+                # date_to = d.get('date'),
+                date_from = '2024-05-01',
+                date_to = '2024-05-31',
                 route_reg = d.get('array_regs', []),
                 group_by = [1, 0, company]
             )
@@ -620,8 +620,7 @@ class AsyncNetworkVariants():
         geojson = self.get_geojson()
         busstop = {}
         b, geojson = self.update_feature_2(variant, geojson, 'forward_points', data_item)
-        print(reg)
-        
+
         if self.getStopPoint:
             if len(geojson['features']) != 0:
                 forward_points_sobop, reverse_points_sobop = await self.get_stop_point_data(date= self.date, uuid=geojson['features'][0]['properties']['variant_uuid'])

@@ -19,233 +19,208 @@
   <property name="modal">
    <bool>true</bool>
   </property>
-  <widget class="QTabWidget" name="tabWidget">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>-1</y>
-     <width>1231</width>
-     <height>891</height>
-    </rect>
-   </property>
-   <property name="currentIndex">
-    <number>0</number>
-   </property>
-   <property name="tabBarAutoHide">
-    <bool>false</bool>
-   </property>
-   <widget class="QWidget" name="tab">
-    <attribute name="title">
-     <string>Главная</string>
-    </attribute>
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
-     <item>
-      <layout class="QVBoxLayout" name="verticalLayout_4">
+  <layout class="QVBoxLayout" name="verticalLayout_5">
+   <item>
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="currentIndex">
+      <number>1</number>
+     </property>
+     <property name="tabBarAutoHide">
+      <bool>false</bool>
+     </property>
+     <widget class="QWidget" name="tab">
+      <attribute name="title">
+       <string>Главная</string>
+      </attribute>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout">
+        <layout class="QVBoxLayout" name="verticalLayout_4">
          <item>
-          <widget class="QLineEdit" name="reg_edit">
-           <property name="placeholderText">
-            <string>Введите рег. номер</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="button_find">
-           <property name="text">
-            <string>Найти варианты</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="expand_button">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string>На весь экран</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QVBoxLayout" name="verticalLayout">
-         <item>
-          <widget class="QPushButton" name="jk_layer_button">
-           <property name="text">
-            <string>Загрузи слой ЖК</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="jd_layer_button">
-           <property name="text">
-            <string>Загрузи слой ЖД</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="population_layer_button">
-           <property name="text">
-            <string>Загрузи слой плотности населения</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="button_dwnl">
-           <property name="text">
-            <string>Загрузи варианты движения по рег. номерам и дате</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="button_layer">
-           <property name="text">
-            <string>Загрузи варианты движения по рег. номерам в один слой</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="stop_point_button">
-           <property name="text">
-            <string>Загрузи варианты движения с выходами по остановкам</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="intersection_button">
-           <property name="text">
-            <string>Анализ общих перегонов маршрута</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="button_prc">
-           <property name="text">
-            <string>Рассчитай процент совпадения выделенных слоев вариантов движения</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="button_prc_group">
-           <property name="text">
-            <string>Рассчитай процент совпадения между двумя выделенными группами слоев</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QTableWidget" name="table_widget"/>
-         </item>
-         <item>
-          <layout class="QVBoxLayout" name="verticalLayout_3">
+          <layout class="QHBoxLayout" name="horizontalLayout">
            <item>
-            <layout class="QVBoxLayout" name="verticalLayout_2">
+            <widget class="QLineEdit" name="reg_edit">
+             <property name="placeholderText">
+              <string>Введите рег. номер</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="button_find">
+             <property name="text">
+              <string>Найти варианты</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="expand_button">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string>На весь экран</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout">
+           <item>
+            <widget class="QPushButton" name="button_dwnl">
+             <property name="text">
+              <string>Загрузи варианты движения по рег. номерам и дате</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="button_layer">
+             <property name="text">
+              <string>Загрузи варианты движения по рег. номерам в один слой</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="stop_point_button">
+             <property name="text">
+              <string>Загрузи варианты движения с выходами по остановкам</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="intersection_button">
+             <property name="text">
+              <string>Анализ общих перегонов маршрута</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="button_prc">
+             <property name="text">
+              <string>Рассчитай процент совпадения выделенных слоев вариантов движения</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="button_prc_group">
+             <property name="text">
+              <string>Рассчитай процент совпадения между двумя выделенными группами слоев</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QTableWidget" name="table_widget"/>
+           </item>
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout_3">
              <item>
-              <widget class="QPushButton" name="save_button">
-               <property name="enabled">
-                <bool>true</bool>
-               </property>
-               <property name="text">
-                <string>Сохранить таблицу в .xlsx</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_5">
+              <layout class="QVBoxLayout" name="verticalLayout_2">
                <item>
-                <widget class="QCheckBox" name="check_box">
+                <widget class="QPushButton" name="save_button">
+                 <property name="enabled">
+                  <bool>true</bool>
+                 </property>
                  <property name="text">
-                  <string>Подгрузить пассажиропоток ?</string>
+                  <string>Сохранить таблицу в .xlsx</string>
                  </property>
                 </widget>
                </item>
                <item>
-                <widget class="QComboBox" name="company_box">
-                 <property name="editable">
-                  <bool>false</bool>
-                 </property>
-                 <property name="currentText">
-                  <string/>
-                 </property>
-                 <property name="placeholderText">
-                  <string/>
-                 </property>
-                </widget>
+                <layout class="QHBoxLayout" name="horizontalLayout_5">
+                 <item>
+                  <widget class="QCheckBox" name="check_box">
+                   <property name="text">
+                    <string>Подгрузить пассажиропоток ?</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QComboBox" name="company_box">
+                   <property name="editable">
+                    <bool>false</bool>
+                   </property>
+                   <property name="currentText">
+                    <string/>
+                   </property>
+                   <property name="placeholderText">
+                    <string/>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
                </item>
-              </layout>
-             </item>
-             <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_4">
                <item>
-                <widget class="QDateEdit" name="date_edit">
+                <layout class="QHBoxLayout" name="horizontalLayout_4">
+                 <item>
+                  <widget class="QDateEdit" name="date_edit">
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                   <property name="date">
+                    <date>
+                     <year>2024</year>
+                     <month>3</month>
+                     <day>28</day>
+                    </date>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QComboBox" name="time_box">
+                   <property name="editable">
+                    <bool>false</bool>
+                   </property>
+                   <property name="currentText">
+                    <string/>
+                   </property>
+                   <property name="placeholderText">
+                    <string/>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_3">
+                 <item>
+                  <widget class="QLineEdit" name="path_edit">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
+                   <property name="placeholderText">
+                    <string>Введите путь к файлу с рег. номерами</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="browse_button">
+                   <property name="text">
+                    <string>Обзор</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <widget class="QLabel" name="status_label">
+                 <property name="enabled">
+                  <bool>true</bool>
+                 </property>
+                 <property name="text">
+                  <string>Готов к работе</string>
+                 </property>
                  <property name="alignment">
                   <set>Qt::AlignCenter</set>
                  </property>
-                 <property name="date">
-                  <date>
-                   <year>2024</year>
-                   <month>3</month>
-                   <day>28</day>
-                  </date>
-                 </property>
                 </widget>
                </item>
                <item>
-                <widget class="QComboBox" name="time_box">
-                 <property name="editable">
-                  <bool>false</bool>
-                 </property>
-                 <property name="currentText">
-                  <string/>
-                 </property>
-                 <property name="placeholderText">
-                  <string/>
+                <widget class="QProgressBar" name="progress">
+                 <property name="value">
+                  <number>0</number>
                  </property>
                 </widget>
                </item>
               </layout>
-             </item>
-             <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_3">
-               <item>
-                <widget class="QLineEdit" name="path_edit">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                 <property name="placeholderText">
-                  <string>Введите путь к файлу с рег. номерами</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPushButton" name="browse_button">
-                 <property name="text">
-                  <string>Обзор</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-             <item>
-              <widget class="QLabel" name="status_label">
-               <property name="enabled">
-                <bool>true</bool>
-               </property>
-               <property name="text">
-                <string>Готов к работе</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QProgressBar" name="progress">
-               <property name="value">
-                <number>0</number>
-               </property>
-              </widget>
              </item>
             </layout>
            </item>
@@ -254,37 +229,54 @@
         </layout>
        </item>
       </layout>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QWidget" name="tab_2">
-    <attribute name="title">
-     <string>Дополнительный функционал</string>
-    </attribute>
-    <widget class="QLabel" name="label">
-     <property name="geometry">
-      <rect>
-       <x>490</x>
-       <y>360</y>
-       <width>261</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="text">
-      <string>В ПРОЦЕССЕ</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
+     </widget>
+     <widget class="QWidget" name="tab_2">
+      <attribute name="title">
+       <string>Дополнительный функционал</string>
+      </attribute>
+      <widget class="QPushButton" name="population_layer_button">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>390</y>
+         <width>1181</width>
+         <height>141</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Загрузи слой плотности населения</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="jk_layer_button">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>30</y>
+         <width>1181</width>
+         <height>141</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Загрузи слой ЖК</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="jd_layer_button">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>210</y>
+         <width>1181</width>
+         <height>141</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Загрузи слой ЖД</string>
+       </property>
+      </widget>
+     </widget>
     </widget>
-   </widget>
-  </widget>
+   </item>
+  </layout>
  </widget>
  <resources/>
  <connections/>

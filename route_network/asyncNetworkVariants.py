@@ -6,13 +6,15 @@ import asyncio
 import json
 import pandas as pd
 from .tkp import TKP_API
-from .rnis import RnisAPI
+from .rnis import RNIS
+import os
 
 class AsyncNetworkVariants():
 
-    def __init__(self, dialog, filepath, date, time, company, isSOBOP, delay=5):
-        self.filepath = filepath
-        self.date = str(date)
+    def __init__(self, dialog, regs, time, company, isSOBOP, date_from, date_to, period, delay=5):
+        self.array_regs = regs
+        self.date_from = date_from
+        self.date_to = date_to
         self.delay = delay
         self.dialog = dialog
         self.sobop_data = []
@@ -22,53 +24,209 @@ class AsyncNetworkVariants():
         self.company = company
         self.sobop_stop_point_data = []
         self.tkp = TKP_API
-        self.rnis = RnisAPI
+        self.rnis = RNIS
         self.login_tkp = 'AnichenkovAnA@mosreg.ru'
         self.password_tkp = 'atQ495Lp!'
         self.login_rnis = 'Karpenko'
         self.password_rnis = 'H7DneQW3'
+        self.token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJSTklTIiwiYXVkIjoiaHR0cDpcL1wvcm5pcy5jb20iLCJpYXQiOjE3MTExMDAxMjYsIm5iZiI6MTcxMTAxNDAyNiwiaW5mbyI6IntcInVzZXJcIjp7XCJ1dWlkXCI6XCI1N2FjOTMyMC05OWI5LTExZWUtOTNhOS0wMmE1MjBkYTE4NWJcIixcImxvZ2luXCI6XCJTaGVwZWxldlwiLFwiY29tcG9uZW50XCI6XCJvcGVyYXRvclwiLFwiaXNfc3lzdGVtXCI6ZmFsc2UsXCJpc19zdXBlcnZpc29yXCI6ZmFsc2UsXCJpc19zZW1pX2NvbmZpcm1lZFwiOmZhbHNlLFwiaXNfbm90aWZpY2F0ZWRcIjpmYWxzZSxcImluZm9cIjp7XCJ1bml0X3V1aWRcIjpcImU2ZmExZjA0LWNiOTMtMTFlYS1iMWZlLTAyZjQyYjA0MzZlMVwifX19In0.BWzWSVcudo0w9UkyQNQ_-ChbXmc9MO4zuBaH8DY2XK0'
+        self.variant_pass_count = 0
+        self.downloaded_layers = []
+        self.period = period
 
 ######### RNIS #########
 
+    def get_variant_data(self, points, variant_name):
+        data = {
+            'variant_uuid': '',
+            'name': '',
+            'forward_points': {
+                'busstop':[], 
+                'coord':[]             
+            },
+            'reverse_points': {
+                'busstop':[], 
+                'coord':[]
+            },
+        }
+        for point in points:
+            data['variant_uuid'] = point.get('route_variant_uuid')
+            data['name'] = variant_name.get(data['variant_uuid'])
+            type = 'forward_points' if point['is_forward_direction'] else 'reverse_points'
+            if point.get('point_type') == 'stop_point':
+                lon = point.get('longitude', None)
+                lat = point.get('latitude', None)
+                if lon and lat is not None:
+                    data[type]['busstop'].append([lon, lat])
+            path = point.get('path_to_the_next_point_geometry', False)
+            if path:
+                coordinates = []
+                for c in path.get('coordinates', []):
+                    coordinates.append(c)
+                if len(coordinates) > 0:
+                    data[type]['coord'].append(coordinates)
+        return data
+    
+
+    def get_variant(self, order, variant_name):
+        """Получение вариантов"""
+        data = {}
+        for shift in order.get('shifts', []):
+            for run in shift.get('runs', []):
+                if run.get('type') in ['production_forward', 'production_reverse']:
+                    route = run.get('route_uuid')
+                    
+                    variant = self.get_variant_data(run.get('points', []), variant_name)
+                    data[route] = data.get(route, [])
+                    
+                    if variant not in data[route]:
+                        data[route].append(variant)
+        return data
+
+
     async def get_data_from_outfit_plan(self, array_regs):
+        progress_value = 0
         """Получаем варианты маршрутов из план нарядов."""
-        async with RnisAPI(self.login_rnis, self.password_rnis) as rnis:
-                    all_data = []
-                    self.dialog.status_label.setText('Получаем маршруты...')
-                    route_list = await rnis.Route.list_(
-                        retries = 8,                                                            
-                        delay = 30,
-                        date = self.date,                                                                                                                  
-                        print_error = True,                                                     
-                        all_pages = True,                                                       
-                        concurrency = 1,   
-                        status = '1abd2f98-7845-11e7-be3f-3a4e0357cc4a',                                                                                                                                                                   
-                        route_reg_number = array_regs
-                    )
-                    percent = 0
-                    self.dialog.status_label.setText('Получаем варианты...')
-                    for route in route_list['payload']['items']:
-                        percent += 100 / len(route_list)
-                        self.dialog.progress.setValue(percent)
+        async with RNIS(login=self.login_rnis, password=self.password_rnis, token=self.token) as rnis:
+            self.dialog.status_general_label.setText('Получаем маршруты...')
+            
+            order_list = await rnis.API.Geo.Order.to_list(
+                all_pages = True,
+                concurrency=5,
+                delay=10,
+                retries=7,                                                    
+                date = self.date_from,                                                                                                                                                         
+                route_reg_number = array_regs,
+                response_data=[]
+            )
 
-                        variant_list = await rnis.Route.variant_list(
-                            retries = 8,                                                            
-                            delay = 30,
-                            all_pages = True,
-                            concurrency = 1,
-                            route_uuid = route['uuid']
-                        )
+            self.dialog.status_general_label.setText('Получаем план наряды...')
+            progress_value += 20
+            self.dialog.progress.setValue(progress_value)
 
-                        result_item = {
-                            'route_reg_number': route['registration_number'],
-                            'route_name': route['title'],
-                            'route_number': route['number'],
-                            'variants': variant_list.get('payload', {}).get('items', [])
+            order_uuids = [{
+                'order_uuid': item['uuid'],
+                'route_reg_number': item['route_registration_number'],
+                'route_name': item['route_name'],
+                'route_number': item['route_number'],
+                'route_uuid': item['route_uuid'],
+                } for p in order_list['payload'] for item in p['items']]
+
+            self.dialog.status_general_label.setText('Получаем названия вариантов...')
+            progress_value += 20
+            self.dialog.progress.setValue(progress_value)
+
+            route_uuid = list(set([r['route_uuid'] for r in order_uuids]))
+            variant_name = {}
+            for r in route_uuid:
+                data = await rnis.API.Geo.Route.Variant.to_list(
+                    route_uuid=r,
+                    all_pages = True,
+                    retries=1,
+                    delay=5,
+                    response_data=[],
+                    print_error=True
+                )
+                for d in data['payload']:
+                    for item in d['items']:
+                        variant_name[item['uuid']] = item['name']
+
+            self.dialog.status_general_label.setText('Получаем варианты...')
+            progress_value += 20
+            self.dialog.progress.setValue(progress_value)
+
+            variant_list = await rnis.API.Geo.Order.read(
+                uuid_list = [item['order_uuid'] for item in order_uuids],
+                all_pages = True,
+                retries=7,
+                delay=10
+            )
+
+            variant_list = [self.get_variant(item, variant_name) for item in variant_list['payload']]
+
+            variant_dict = {}
+
+            for variant in variant_list:
+                for k, v in variant.items():
+                    variant_dict[k] = variant_dict.get(k, [])
+                    variant_dict[k].extend(item for item in v if item not in variant_dict[k])
+
+
+            route_registry = []
+
+            self.dialog.status_general_label.setText('Получаем тип ТС...')
+            progress_value += 20
+            self.dialog.progress.setValue(progress_value)
+
+            for reg_number in array_regs:
+                registry = await rnis.API.Geo.Route.Registry.to_list(
+                    reg_number=reg_number,
+                    response_data=['items/vehicle_type_uuid', 'items/route/uuid', 'items/vehicles_plan/vehicle_capacity_type_uuid'],
+                    all_pages = True,
+                    retries=5,
+                    delay=5
+                )
+                for p in registry['payload']:
+                    route_registry.append(p['items'])
+            
+            dictionary = await rnis.API.Dictionary.list_many(
+                dictionary=['vehicle_types', 'vehicle_capacity_types'],
+                print_error=True,
+                retries=3
+            )
+
+            dictionary_info = {}
+            for item in dictionary['payload'][0]['items']:
+                dictionary_info[item['key']] = {}
+                for d in item['documents']:
+                    dictionary_info[item['key']][d['uuid']] = d['name']
+            
+            registry_dict = {}
+
+            for item in route_registry:
+                for registry in item:
+                    new_key = registry['route']['uuid']
+                    vehicle_type = registry.get('vehicle_type_uuid', '')
+                    name = ''
+                    class_name = ''
+
+                    if vehicle_type != '':
+                        name = dictionary_info['vehicle_types'].get(vehicle_type)
+                    
+                    for i in registry['vehicles_plan']:
+                        class_name = dictionary_info['vehicle_capacity_types'].get(i['vehicle_capacity_type_uuid'], '')
+                        if class_name != '':
+                                    break
+                        
+                    if new_key not in registry_dict.keys():
+                        registry_dict[new_key] = {
+                            'name': name,
+                            'class_name': class_name if class_name is not None else ''
                         }
+        
+            changed_order_data = []
+            for order in order_uuids:
+                del order['order_uuid']
+                if order not in changed_order_data:
+                    changed_order_data.append(order)
 
-                        if result_item not in all_data:
-                            all_data.append(result_item)
-                    return all_data
+            self.dialog.status_general_label.setText('Подготавливаем варианты...')
+            progress_value += 20
+            self.dialog.progress.setValue(progress_value)
+
+            result_variants = {}
+            for r in changed_order_data:
+                u = r['route_uuid']
+                result_variants[u] = result_variants.get(u, {})
+                result_variants[u]['route_reg_number'] = r['route_reg_number']
+                result_variants[u]['route_number'] = r['route_number']
+                result_variants[u]['vehicle_type'] = registry_dict[r['route_uuid']]['name'] if r['route_uuid'] in registry_dict.keys() else ''
+                result_variants[u]['vehicle_class_type'] = registry_dict[r['route_uuid']]['class_name'] if r['route_uuid'] in registry_dict.keys() else ''
+                result_variants[u]['variants'] = variant_dict.get(u, [])
+                result_variants[u]['route_name'] = r.get('route_name', [])
+
+            result = [{'route_uuid': k} | v for k,v in result_variants.items()]
+            return result
 
 ######################################################################################################################################################
 
@@ -83,8 +241,8 @@ class AsyncNetworkVariants():
             card.parameters_update(
                 route_reg = d.get('uuid'),
                 shift = 'прямое',
-                date_from = d.get('date'),
-                date_to = d.get('date')
+                date_from = self.date_from,
+                date_to = self.date_to if self.date_to else self.date_from
             )
 
             forwards = await card.json
@@ -92,8 +250,8 @@ class AsyncNetworkVariants():
             card.parameters_update(
                 route_reg = d.get('uuid'),
                 shift = 'обратное',
-                date_from = d.get('date'),
-                date_to = d.get('date')
+                date_from = self.date_from,
+                date_to = self.date_to if self.date_to else self.date_from
             )
 
             reverses = await card.json
@@ -104,24 +262,17 @@ class AsyncNetworkVariants():
     async def get_type_payment(self, **d):
         """Получаем инфо из СОБОП по типам оплаты: БК, СК, КОЛ-ВСЕГО"""
         company = 1 if self.company == 'МТА' else 2
-        sobop_data = []
         async with self.tkp(self.login_tkp, self.password_tkp) as tkp:
             card = tkp.Card
             await card(3192)
-
             card.parameters_update (
-                # date_from = d.get('date'),
-                # date_to = d.get('date'),
-                date_from = '2024-05-01',
-                date_to = '2024-05-31',
+                date_from = self.date_from,
+                date_to = self.date_to if self.date_to else self.date_from,
                 route_reg = d.get('array_regs', []),
-                group_by = [1, 0, company]
+                group_by = [2, 0, company]
             )
             data = await card.json
-            for item in data:
-                if len(item) != 0:
-                    sobop_data.append({'reg': item['РЕГ НОМЕР'], 'data': data})
-        return sobop_data
+        return data
 
 
     async def get_zagr_passp(self, **d):
@@ -131,8 +282,8 @@ class AsyncNetworkVariants():
             await card(3451)
 
             card.parameters_update (
-                date_from = d.get('date'),
-                date_to = d.get('date'),
+                date_from = self.date_from,
+                date_to = self.date_to if self.date_to else self.date_from,
                 shift = d.get('route_type'),
                 route_reg = d.get('var_uid')
             )
@@ -151,14 +302,14 @@ class AsyncNetworkVariants():
             for reg in d.get('array_regs', []):
                 card.parameters_update(
                     route_reg = reg,
-                    date = d.get('date'),
+                    date = self.date_from,
                     time_from = f"{time_values[0]}:00",
                     time_to = f"{time_values[1]}:00",
                     occupancy = 0
                 )
                 data = await card.json
                 if len(data) != 0:
-                    sobop_data.append({'reg': reg, 'data': data})
+                    sobop_data.append(data)
         return sobop_data
 
 #######################################################################################################################################################
@@ -179,8 +330,7 @@ class AsyncNetworkVariants():
             data = {
                 "type": "Feature",
                 "properties": {
-                    "description": "None",
-                    "zagr": 'None',
+                    "description": "",
                 },
                 "geometry": {
                     "type": "LineString",
@@ -199,38 +349,32 @@ class AsyncNetworkVariants():
         return data
 
 
-    def get_busstop_and_coord(self, route, route_type):
-        busstop, coord = [], []
-        points = route.get(route_type, False)
-        if points:
-            for point in points:
-                if point.get('point_type') == 'stop_point':
-                    lon = point.get('longitude', None)
-                    lat = point.get('latitude', None)
-                    if lon and lat is not None:
-                        busstop.append([lon, lat])
-                path = point.get('path_to_the_next_point_geometry', False)
-                if path:
-                    coordinates = path.get('coordinates', False)
-                    if coordinates:
-                        if coordinates not in coord:
-                            coord.append(coordinates)
-        return busstop, coord
-
-
-    def update_feature_2(self, route, geojson, route_type, data_item):
-        busstop, coord = self.get_busstop_and_coord(route, route_type)
-
+    def update_feature_2(self, variant, geojson, route_type, data_item):
+        busstop, coord = variant.get(route_type).get('busstop'), variant.get(route_type).get('coord')
+        reg_number = data_item['route_reg_number']
         for i, c in enumerate(coord, 1):
             feature = self.get_feature('LineString')
             feature['geometry']['coordinates'] = c
-            feature['properties']['description'] = f'Перегон: {i}'
-            feature['properties']['peregon'] = i
-            feature['properties']['variant_uuid'] = route['uuid']
+            feature['properties']['description'] = f'Вариант маршрута {reg_number}'
+            feature['properties']['peregon_name'] = f'Перегон: {i}'
+            feature['properties']['variant_name'] = variant['name']
+            feature['properties']['variant_uuid'] = variant['variant_uuid']
             feature['properties']['route_number'] = data_item['route_number']
             feature['properties']['route_reg_number'] = data_item['route_reg_number']
+            feature['properties']['route_name'] = data_item['route_name']
+            feature['properties']['route_uuid'] = data_item['route_uuid']
+            feature['properties']['date_from'] = str(self.date_from)
+            feature['properties']['type'] = data_item['vehicle_type']
+            feature['properties']['class_type'] = data_item['vehicle_class_type']
             geojson['features'].append(feature)
         return busstop, geojson
+    
+
+    def is_stop_point_in_layer(self, data, point_number):
+        for i in data:
+            if point_number == int(i['№ остановки']):
+                return i
+        return None
 
 
     def get_points_geojson_layer(self, geojson, stop_point_data):
@@ -239,57 +383,69 @@ class AsyncNetworkVariants():
         index = 0
         for item in geojson['features']:
             if item['geometry']['type'] == 'Point':
-                if index < len(stop_point_data):
+                data = self.is_stop_point_in_layer(stop_point_data, index + 1)
+                if data is not None:
                     item['properties']['description'] = f"Номер остановки {index + 1}"
-                    item['properties']['Вышло всего'] = stop_point_data[index]['Вышло всего']
-                    item['properties']['Зашло всего'] = stop_point_data[index]['Зашло всего']
-                    item['properties']['Вышло СК'] = stop_point_data[index]['Вышло СК']
-                    item['properties']['Зашло СК'] = stop_point_data[index]['Зашло СК']
-                    item['properties']['Вышло ком'] = stop_point_data[index]['Вышло ком']
-                    item['properties']['Зашло ком'] = stop_point_data[index]['Зашло ком']
-                    index += 1
+                    item['properties']['Вышло всего'] = data['Вышло всего']
+                    item['properties']['Зашло всего'] = data['Зашло всего']
+                    item['properties']['Вышло СК'] = data['Вышло СК']
+                    item['properties']['Зашло СК'] = data['Зашло СК']
+                    item['properties']['Вышло ком'] = data['Вышло ком']
+                    item['properties']['Зашло ком'] = data['Зашло ком']   
+                else:
+                    item['properties']['description'] = f"Номер остановки {index + 1}"
+                    item['properties']['Вышло всего'] = 0
+                    item['properties']['Зашло всего'] = 0
+                    item['properties']['Вышло СК'] = 0
+                    item['properties']['Зашло СК'] = 0
+                    item['properties']['Вышло ком'] = 0
+                    item['properties']['Зашло ком'] = 0
+                index += 1
         return geojson
     
 
-    def update_feature_layer_2(self, route, geojson, route_type, data_item):
-        _, coord = self.get_busstop_and_coord(route, route_type)
-
+    def update_feature_layer_2(self, variant, geojson, route_type, data_item):
+        coord = variant.get(route_type).get('coord')
         kol_soc = 0
         kol_kom = 0
         kol_total = 0
         flag = True
+        reg_number = data_item['route_reg_number']
+        
+        feature = self.get_feature('LineString')
+        feature['properties']['description'] = f'Вариант маршрута {reg_number}'
+        feature['properties']['variant_name'] = f"{variant['name']}-{route_type}"
+        feature['properties']['variant_uuid'] = variant['variant_uuid']
+        feature['properties']['route_number'] = data_item['route_number']
+        feature['properties']['route_reg_number'] = data_item['route_reg_number']
+        feature['properties']['route_name'] = data_item['route_name']
+        feature['properties']['route_uuid'] = data_item['route_uuid']
+        feature['properties']['type'] = data_item['vehicle_type']
+        feature['properties']['class_type'] = data_item['vehicle_class_type']
+        feature['properties']['date_from'] = str(self.date_from)
 
         if self.isSOBOP:
             for item in self.sobop_data:
-                if str(item['reg']) == str(data_item['route_reg_number']):
+                if str(item['РЕГ НОМЕР']) == str(data_item['route_reg_number']):
                     flag = False
-                    for value in item['data']:
-                        kol_soc += value['КОЛ СОЦ']
-                        kol_kom += value['КОЛ КОММ']
-                        kol_total += value['КОЛ ВСЕГО']
-        
-        if flag and self.isSOBOP:
-            print(f"{data_item['route_reg_number']} не добавлен! Причина - нет в СОБОП ")
-            return geojson
+                    kol_soc += item['КОЛ СОЦ'] if item['КОЛ СОЦ'] else 0
+                    kol_kom += item['КОЛ КОММ'] if item['КОЛ КОММ'] else 0
+                    kol_total += item['КОЛ ВСЕГО'] if item['КОЛ ВСЕГО'] else 0
 
-        feature = self.get_feature('LineString')
-        feature['properties']['description'] = data_item['route_name']
-        feature['properties']['variant_uuid'] = route['uuid']
-        feature['properties']['route_number'] = data_item['route_number']
-        feature['properties']['route_reg_number'] = data_item['route_reg_number']
-        feature['properties']['variant_name'] = f"{route['name']}-{route_type}"
-        if self.isSOBOP:
+            if self.date_to is not None:
+                feature['properties']['date_to'] = str(self.date_to)
+
+            if flag and self.isSOBOP:
+                print(f"{data_item['route_reg_number']} не добавлен! Причина - нет в СОБОП ")
+                return geojson
+            
             feature['properties']['kol_soc'] = kol_soc
             feature['properties']['kol_kom'] = kol_kom
             feature['properties']['kol_total'] = kol_total
 
-        for _, c in enumerate(coord, 1):
-            for item in c:
-                feature['geometry']['coordinates'].append(item)
-                
-        if len(feature['geometry']['coordinates']) != 0:
-            if feature not in geojson['features']:
-                geojson['features'].append(feature)
+        feature['geometry']['coordinates'] = coord
+
+        geojson['features'].append(feature)
         return geojson
     
 #######################################################################################################################################################
@@ -328,7 +484,12 @@ class AsyncNetworkVariants():
         if field_index != -1:
             values = [feature[field_index] for feature in layer.getFeatures()]
             # Преобразовать значения в целочисленные (если возможно)
-            integer_values = [int(value) if value is not None else None for value in values]
+            integer_values = []
+            for value in values:
+                if value is not None:
+                    if type(value) != QVariant:
+                        integer_values.append(int(value))
+
             if len(integer_values) != 0:
                 # Get unique values in the passp field
                 unique_values = set(integer_values)
@@ -362,6 +523,7 @@ class AsyncNetworkVariants():
                 # Update the style
                 layer.triggerRepaint()
                 print("Стиль успешно загружен.")
+                self.variant_pass_count += 1
         else:
             symbol = QgsLineSymbol()
             symbol.setWidth(1.26)
@@ -409,13 +571,19 @@ class AsyncNetworkVariants():
         layer.startEditing()
 
         layer.addAttribute(QgsField("description", QVariant.String))
-        layer.addAttribute(QgsField("zagr", QVariant.String))
+        layer.addAttribute(QgsField("variant_name", QVariant.String))
         layer.addAttribute(QgsField("variant_uuid", QVariant.String))
         layer.addAttribute(QgsField("route_number", QVariant.String))
         layer.addAttribute(QgsField("route_reg_number", QVariant.String))
-        layer.addAttribute(QgsField("variant_name", QVariant.String))
+        layer.addAttribute(QgsField("route_name", QVariant.String))
+        layer.addAttribute(QgsField("route_uuid", QVariant.String))
+        layer.addAttribute(QgsField("type", QVariant.String))
+        layer.addAttribute(QgsField("class_type", QVariant.String))
+        layer.addAttribute(QgsField("date_from", QVariant.String))
 
         if self.isSOBOP:
+            if self.date_to is not None:
+                layer.addAttribute(QgsField("date_to", QVariant.String))
             layer.addAttribute(QgsField("kol_soc", QVariant.String))
             layer.addAttribute(QgsField("kol_kom", QVariant.String))
             layer.addAttribute(QgsField("kol_total", QVariant.String))
@@ -423,29 +591,57 @@ class AsyncNetworkVariants():
         for feature_data in geojson_obj["features"]:
             feature = QgsFeature()
             if self.isSOBOP:
-                feature.setAttributes([
-                    feature_data["properties"]["description"],
-                    feature_data["properties"]["zagr"],
-                    feature_data["properties"]["variant_uuid"],
-                    feature_data["properties"]["route_number"],
-                    feature_data["properties"]["route_reg_number"],
-                    feature_data["properties"]["variant_name"],
-                    feature_data["properties"]["kol_soc"],
-                    feature_data["properties"]["kol_kom"],
-                    feature_data["properties"]["kol_total"]
-                ])
+                if self.date_to is not None:
+                    feature.setAttributes([
+                        feature_data["properties"]["description"],
+                        feature_data["properties"]["variant_name"],
+                        feature_data["properties"]["variant_uuid"],
+                        feature_data["properties"]["route_number"],
+                        feature_data["properties"]["route_reg_number"],
+                        feature_data["properties"]["route_name"],
+                        feature_data["properties"]["route_uuid"],
+                        feature_data["properties"]["type"],
+                        feature_data["properties"]["class_type"],
+                        feature_data["properties"]["date_from"],
+                        feature_data["properties"]["date_to"],
+                        feature_data["properties"]["kol_soc"],
+                        feature_data["properties"]["kol_kom"],
+                        feature_data["properties"]["kol_total"]
+                    ])
+                else:
+                    feature.setAttributes([
+                        feature_data["properties"]["description"],
+                        feature_data["properties"]["variant_name"],
+                        feature_data["properties"]["variant_uuid"],
+                        feature_data["properties"]["route_number"],
+                        feature_data["properties"]["route_reg_number"],
+                        feature_data["properties"]["route_name"],
+                        feature_data["properties"]["route_uuid"],
+                        feature_data["properties"]["type"],
+                        feature_data["properties"]["class_type"],
+                        feature_data["properties"]["date_from"],
+                        feature_data["properties"]["kol_soc"],
+                        feature_data["properties"]["kol_kom"],
+                        feature_data["properties"]["kol_total"]
+                    ])                 
             else:
                 feature.setAttributes([
                     feature_data["properties"]["description"],
-                    feature_data["properties"]["zagr"],
+                    feature_data["properties"]["variant_name"],
                     feature_data["properties"]["variant_uuid"],
                     feature_data["properties"]["route_number"],
                     feature_data["properties"]["route_reg_number"],
-                    feature_data["properties"]["variant_name"]
+                    feature_data["properties"]["route_name"],
+                    feature_data["properties"]["route_uuid"],
+                    feature_data["properties"]["type"],
+                    feature_data["properties"]["class_type"],
+                    feature_data["properties"]["date_from"],
                 ])
+        
             geometry = QgsGeometry.fromPolylineXY([
-                QgsPointXY(coord[0], coord[1]) for coord in feature_data["geometry"]["coordinates"]
+                QgsPointXY(coord[0], coord[1]) for item in feature_data["geometry"]["coordinates"] for coord in item
             ])
+
             feature.setGeometry(geometry)
             layer.addFeature(feature)
         
@@ -477,136 +673,154 @@ class AsyncNetworkVariants():
 
 ######### CALCULATE FUNCTIONS #########
 
-    def get_peregon_count(self, geojson):
-        min = 0
+    async def fetch_sobop_by_hour(self, geojson):
+        variant_uuid = geojson['features'][0]['properties']['variant_uuid']
+        for item in self.sobop_data:
+            for variant_data in item:
+                if variant_data['UUID варианта маршрута'] == variant_uuid:
+                    peregon = variant_data['N перегона'] - 1
+                    geojson['features'][peregon]['properties']['passp'] = str(variant_data['Кол-во пассажиров'])
+                    geojson['features'][peregon]['properties']['zagr'] = f"{round(int(variant_data['Кол-во пассажиров']) / variant_data['Сидячих мест'] * 100, 2)} %"
+                    geojson['features'][peregon]['properties']['kol_soc'] = str(variant_data['Кол-во соц']) if variant_data['Кол-во соц'] is not None else '0'
+                    geojson['features'][peregon]['properties']['kol_kom'] = str(variant_data['Кол-во ком']) if variant_data['Кол-во ком'] is not None else '0'
+
+
+    def get_feature_by_pereon(self, geojson, peregon_number):
         for feature in geojson['features']:
-            if 'properties' in feature.keys():
-                if 'peregon' in feature['properties'].keys():
-                    if feature['properties']['peregon'] > min:
-                        min = feature['properties']['peregon']
-        return min
-
-
-    def find_number_by_peregon_count(self, df, peregon_count, type_name):
-        df = df.loc[:, ['Номер', 'N перегона', 'Направление']]
-        df = df.where(df['Направление'] == type_name)
-        df = df.groupby('Номер')['N перегона'].max().reset_index()
-        for items in df.to_numpy():
-            if items[1] == peregon_count:
-                return items[0]
-
-
-    def calculate_zagr_passp_by_peregons(self, geojson, df):
-        values = []
-        peregons = []
-        count = 0
-        exit_data = []
-        for _, row in df.iterrows():
-            peregons.append(row['N перегона'])
-            exit_data.append((row['Кол-во соц'], row['Кол-во ком']))
-            count_pass = row['Кол-во пассажиров']
-            count_zagr = round(count_pass / row['Сидячих мест'] * 100, 2)
-            values.append((count_pass, count_zagr))
-        
-        for feature in geojson['features']:
-            if 'properties' in feature.keys():
-                if 'peregon' in feature['properties'].keys():
-                    if count < len(peregons):
-                        if feature['properties']['peregon'] != peregons[count]:
-                            feature['properties']['zagr'] = 0
-                            feature['properties']['passp'] = 0
-                            feature['properties']['kol_soc'] = 0
-                            feature['properties']['kol_kom'] = 0
-                        else:
-                            feature['properties']['zagr'] = values[count][1]
-                            feature['properties']['passp'] = values[count][0]
-                            feature['properties']['kol_soc'] = exit_data[count][0]
-                            feature['properties']['kol_kom'] = exit_data[count][1]
-                            count += 1
-                    else:
-                        feature['properties']['zagr'] = 0
-                        feature['properties']['passp'] = 0
-                        feature['properties']['kol_soc'] = 0
-                        feature['properties']['kol_kom'] = 0
-
-
-    def parse_df(self, df):
-        agg_funcs = {
-            'Кол-во автобусов': 'first',  
-            'Рег.номер': 'first',
-            'Загруженность': 'sum',  
-            'Маршрут': 'first',
-            'Вместимость общая': 'first',
-            'Сидячих мест': 'first',
-            'Вместимость': 'first',
-            'Направление': 'first',
-            'ГРЗ': 'first',
-            'Кол-во пассажиров': 'sum',
-            'Номер': 'first',
-            'Кол-во соц': 'first',
-            'Кол-во ком': 'first'
-        }
-        df = df.groupby('N перегона', as_index=False).agg(agg_funcs)
-        return df
-
-
-    async def fetch_sobop_by_hour(self, geojson, reg, type_name):
-        if int(reg) in (item['reg'] for item in self.sobop_data):
-            peregon_count = self.get_peregon_count(geojson)
-            data = [item['data'] for item in self.sobop_data if item['reg'] == int(reg)]
-            df = pd.DataFrame(data[0])
-            number = self.find_number_by_peregon_count(df, peregon_count, type_name)
-            df = df.where(df['Направление'] == type_name)
-            df = df.where(df['Номер'] == number).dropna()
-            if df.empty != True:
-                df = self.parse_df(df)
-                self.calculate_zagr_passp_by_peregons(geojson, df)
-        else:
-            for feature in geojson['features']:
-                if 'properties' in feature.keys():
-                    feature['properties']['zagr'] = 0
-                    feature['properties']['passp'] = 0
+            if feature['geometry']['type'] == 'LineString':
+                if feature['properties']['peregon_name'].split(' ')[1] == str(peregon_number):
+                    return feature
+        return None
 
 
     async def fetch_sobop_by_stop_point(self, geojson, reg, type_name):
         uuid = geojson['features'][0]['properties']['variant_uuid']
-        data = await self.get_zagr_passp(route_type=type_name, var_uid=uuid, date=self.date)
-        index = 0
-        for item in data:
-            passp = 0
-            passp += abs(item['Зашло всего'] - item['Вышло всего'])
-            feature = geojson['features'][index]
-            if 'properties' in feature.keys():
-                if 'peregon' in feature['properties'].keys():
-                    if index == item['№ остановки'] - 1:
-                        feature['properties']['zagr'] = 0
-                        feature['properties']['passp'] = passp
-                        feature['properties']['kol_soc'] = item['Зашло СК']
-                        feature['properties']['kol_kom'] = item['Зашло ком']
-                        index += 1
-                        continue
-            while(index != item['№ остановки'] - 1):
-                geojson['features'][index]['properties']['zagr'] = 0
-                geojson['features'][index]['properties']['passp'] = 0
-                geojson['features'][index]['properties']['kol_soc'] = 0
-                geojson['features'][index]['properties']['kol_kom'] = 0
-                index += 1
-            geojson['features'][index]['properties']['zagr'] = 0
-            geojson['features'][index]['properties']['passp'] = passp
-            geojson['features'][index]['properties']['kol_soc'] = item['Зашло СК']
-            geojson['features'][index]['properties']['kol_kom'] = item['Зашло ком']
-            index += 1
+        data = await self.get_zagr_passp(route_type=type_name, var_uid=uuid)
+        peregon_index = 1
+        current_passp = 0
+        current_soc = 0 
+        current_kom = 0
 
+        for i in range(len(data) - 1):
+            stop_point_prev = int(data[i]['№ остановки'])
+            stop_point_curr = int(data[i+1]['№ остановки'])
 
-    def get_array_regs(self):
-        with open(self.filepath, encoding='utf-8') as f:
-            data = json.load(f)
-        return data
+            if stop_point_curr - stop_point_prev == 1:
+                current_passp += data[i]['Зашло всего'] - data[i]['Вышло всего']
+                current_soc += data[i]['Зашло СК'] - data[i]['Вышло СК']
+                current_kom += data[i]['Зашло ком'] - data[i]['Вышло ком']
+
+                feature = self.get_feature_by_pereon(geojson, stop_point_curr - 1)
+
+                feature['properties']['passp'] = current_passp
+                feature['properties']['kol_soc'] = current_soc
+                feature['properties']['kol_kom'] = current_kom
+                peregon_index += 1
+            else:
+                while peregon_index != stop_point_curr:
+                    feature = self.get_feature_by_pereon(geojson, peregon_index)
+
+                    feature['properties']['passp'] = current_passp
+                    feature['properties']['kol_soc'] = current_soc
+                    feature['properties']['kol_kom'] = current_kom
+                    peregon_index += 1
 
 
     def chunks(self, lst, n):
         for i in range(0, len(lst), n):
-            yield lst[i:i + n]
+            yield lst[i:i + n] 
+
+
+    def get_result_variant_data(self, routes_count, variants_count):
+        if self.isSOBOP:
+            total_passp = 0
+            total_soc = 0
+            total_kom = 0
+            for variant in self.downloaded_layers:
+                for feature in variant['features']:
+                    if feature['geometry']['type'] == 'LineString':
+                        if 'passp' in feature['properties'].keys() and 'kol_soc' in feature['properties'].keys() and 'kol_kom' in feature['properties'].keys():
+                            passp = feature['properties']['passp']
+                            soc = feature['properties']['kol_soc']
+                            kom = feature['properties']['kol_kom']
+
+                            if passp is not None and passp != 'None':
+                                total_passp += int(passp)
+                            if soc is not None and soc != 'None':
+                                total_soc += int(soc)
+                            if kom is not None and kom != 'None':
+                                total_kom += int(kom)
+            self.dialog.create_downloaded_layer_info_table('layer', [routes_count, variants_count, self.variant_pass_count, variants_count - self.variant_pass_count, total_passp, total_soc, total_kom])                  
+        else:
+            self.dialog.create_downloaded_layer_info_table('custom', [routes_count, variants_count])
+
+
+    def get_result_layer_data(self, routes_count, variants_count):
+        if self.isSOBOP:
+            total_soc = 0
+            total_kom = 0
+            total = 0
+            for variant in self.downloaded_layers:
+                for feature in variant['features']:
+                    if feature['geometry']['type'] == 'LineString':
+                        soc = feature['properties']['kol_soc']
+                        kom = feature['properties']['kol_kom']
+                        total_value = feature['properties']['kol_total']
+
+                        if soc != 'None':
+                            total_soc += int(soc)
+                        if kom != 'None':
+                            total_kom += int(kom)
+                        if total_value != 'None':
+                            total += int(total_value)
+                            
+            self.dialog.create_downloaded_layer_info_table('network', [routes_count, variants_count, total_soc, total_kom, total])
+
+
+    def get_result_info_stop_point_data(self, routes_count, variants_count):
+        if self.isSOBOP:
+            total_soc = 0
+            total_kom = 0
+            total_passp = 0
+            for variant in self.downloaded_layers:
+                for feature in variant['features']:
+                    if feature['geometry']['type'] == 'LineString':
+                        passp = 0
+                        soc = 0
+                        kom = 0
+
+                        if 'passp' in feature['properties'].keys():
+                            passp = feature['properties']['passp']
+                        
+                        if 'kol_soc' in feature['properties'].keys():
+                            soc = feature['properties']['kol_soc']
+
+                        if 'kol_kom' in feature['properties'].keys():
+                            kom = feature['properties']['kol_kom']
+
+                        if passp != 'None':
+                            total_passp += int(passp)
+                        if soc != 'None':
+                            total_soc += int(soc)
+                        if kom != 'None':
+                            total_kom += int(kom)
+                    
+            self.dialog.create_downloaded_layer_info_table('point', [routes_count, variants_count, total_passp, total_soc, total_kom])
+                        
+    
+    def get_data_reduction(self, busstop_list, variant):
+        busstop, features = {}, []
+        if len(busstop_list) != 0:
+            for obj in busstop_list:
+                busstop[variant['variant_uuid']] = busstop.get(variant['variant_uuid'], [])
+                if obj not in busstop[str(variant['variant_uuid'])]:
+                    busstop[variant['variant_uuid']].append(obj)
+            for v in busstop.values():
+                for b in v:
+                    feature = self.get_feature('Point')
+                    feature['geometry']['coordinates'] = b
+                    features.append(feature)
+        return features
 
 #######################################################################################################################################################
 
@@ -618,82 +832,71 @@ class AsyncNetworkVariants():
         name = variant['name']
         reg = data_item['route_reg_number']
         geojson = self.get_geojson()
-        busstop = {}
-        b, geojson = self.update_feature_2(variant, geojson, 'forward_points', data_item)
+        busstop, geojson = self.update_feature_2(variant, geojson, 'forward_points', data_item)
 
         if self.getStopPoint:
             if len(geojson['features']) != 0:
-                forward_points_sobop, reverse_points_sobop = await self.get_stop_point_data(date= self.date, uuid=geojson['features'][0]['properties']['variant_uuid'])
+                forward_points_sobop, reverse_points_sobop = await self.get_stop_point_data(uuid=geojson['features'][0]['properties']['variant_uuid'])
             else:
                 forward_points_sobop = []
                 reverse_points_sobop = []
         else:
             forward_points_sobop = []
             reverse_points_sobop = []
-
-        if len(b) != 0:
-            for obj in b:
-                try:
-                    if obj not in busstop[str(variant['name'])]:
-                        busstop[variant['name']].append(obj)
-                except:
-                    busstop[variant['name']] = [obj]
-            for _, v in busstop.items():
-                for b in v:
-                    feature = self.get_feature('Point')
-                    feature['geometry']['coordinates'] = b
-                    geojson['features'].append(feature)
+        
+        f = self.get_data_reduction(busstop, variant)
+        if len(f) > 0:
+            geojson['features'].extend(f)
 
             if self.isSOBOP and self.getStopPoint == False:
-                await self.fetch_sobop_by_hour(geojson, data_item['route_reg_number'], 'прямое')
+                await self.fetch_sobop_by_hour(geojson)
             elif self.getStopPoint:
                 await self.fetch_sobop_by_stop_point(geojson, data_item['route_reg_number'], 'прямое')
-
+            self.downloaded_layers.append(geojson)
             self.add_layer_to_project(geojson, f'№{number}-{name}-{reg}-прямое', f'forwards-{self.company}', stop_points=forward_points_sobop)
 
         geojson = self.get_geojson()
-        busstop = {}
-        b, geojson = self.update_feature_2(variant, geojson, 'reverse_points', data_item)
-        if len(b) != 0:
-            for obj in b:
-                try:
-                    if obj not in busstop[str(variant['name'])]:
-                        busstop[variant['name']].append(obj)
-                except:
-                    busstop[variant['name']] = [obj]
-            for _, v in busstop.items():
-                for b in v:
-                    feature = self.get_feature('Point')
-                    feature['geometry']['coordinates'] = b
-                    geojson['features'].append(feature)
-
+        busstop, geojson = self.update_feature_2(variant, geojson, 'reverse_points', data_item)
+        f = self.get_data_reduction(busstop, variant)
+        if len(f) > 0:
+            geojson['features'].extend(f)
             
             if self.isSOBOP and self.getStopPoint == False:
-                await self.fetch_sobop_by_hour(geojson, data_item['route_reg_number'], 'обратное')
+                await self.fetch_sobop_by_hour(geojson)
             elif self.getStopPoint:
                 await self.fetch_sobop_by_stop_point(geojson, data_item['route_reg_number'], 'обратное')
-
+            self.downloaded_layers.append(geojson)
             self.add_layer_to_project(geojson, f'№{number}-{name}-{reg}-обратное', f'reverses-{self.company}', stop_points=reverse_points_sobop)
 
 
     async def fetchVariants(self, isStopPoint = False):
+        self.downloaded_layers = []
+        self.variant_pass_count = 0
+        variants_count = 0
         percent = 0
-        regs = self.get_array_regs()
-        route_list = await self.get_data_from_outfit_plan(regs)
+        route_list = await self.get_data_from_outfit_plan(self.array_regs)
+        
         if self.isSOBOP and isStopPoint == False:
-            self.sobop_data = await self.get_workload_tkp(date=self.date, time=self.time, array_regs=regs)
+            self.sobop_data = await self.get_workload_tkp(time=self.time, array_regs=self.array_regs)
         elif isStopPoint:
             self.getStopPoint = True
-        
+
         for route in route_list:
-            self.dialog.status_label.setText('Отрисовка геометрии. ..')
+            self.dialog.status_general_label.setText('Отрисовка геометрии. ..')
             for variant in route['variants']:
+                variants_count += 1
                 self.dialog.progress.setValue(percent)
                 percent += 100 / len(route['variants'])
                 if percent >= len(route['variants']):
                     percent = 0
                 await self.distillation(variant, route)
-        self.dialog.status_label.setText(f'Загружено маршрутов: {len(route_list)}')
+                
+        self.dialog.status_general_label.setText(f'Загружено маршрутов: {len(route_list)}')               
+
+        if not isStopPoint:
+            self.get_result_variant_data(len(route_list), variants_count)
+        else:
+            self.get_result_info_stop_point_data(len(route_list), variants_count)
 
 #######################################################################################################################################################
 
@@ -701,27 +904,37 @@ class AsyncNetworkVariants():
 ######### TRANSFORM VARIANTS TO ONE LAYER #########
 
     async def distilation_by_layer(self, geojson, variant, data_item):
-        geojson = self.update_feature_layer_2(variant, geojson, 'forward_points', data_item)
-        geojson = self.update_feature_layer_2(variant, geojson, 'reverse_points', data_item)
+        if len(variant['forward_points']['coord']) != 0:
+            geojson = self.update_feature_layer_2(variant, geojson, 'forward_points', data_item)
+            self.downloaded_layers.append(geojson)
+        
+        if len(variant['reverse_points']['coord']) != 0:
+            geojson = self.update_feature_layer_2(variant, geojson, 'reverse_points', data_item)
+            self.downloaded_layers.append(geojson)
 
 
     async def fetchLayerVariants(self):
         percent = 0
-        regs = self.get_array_regs()
-        route_list = await self.get_data_from_outfit_plan(regs)
+        variants_count = 0
+        self.downloaded_layers = []
+        route_list = await self.get_data_from_outfit_plan(self.array_regs)
         if self.isSOBOP:
-            self.sobop_data = await self.get_type_payment(date=self.date, array_regs=regs)
+            self.sobop_data = await self.get_type_payment(array_regs=self.array_regs)
+
         geojson = self.get_geojson()
         for route in route_list:
-            self.dialog.status_label.setText('Отрисовка геометрии. ..')
+            self.dialog.status_general_label.setText('Отрисовка геометрии. ..')
             for variant in route['variants']:
+                variants_count += 1
                 self.dialog.progress.setValue(percent)
                 percent += 100 / len(route['variants'])
                 if percent >= len(route['variants']):
                     percent = 0
                 await self.distilation_by_layer(geojson, variant, route)
         self.add_one_layer_to_project(geojson)
-        self.dialog.status_label.setText(f'Загружено маршрутов: {len(route_list)}')
+        self.dialog.status_general_label.setText(f'Загружено маршрутов: {len(route_list)}')
+        
+        self.get_result_layer_data(len(route_list), variants_count)
 
 #######################################################################################################################################################
 
@@ -729,8 +942,6 @@ class AsyncNetworkVariants():
 ######### START UI FUNCTIONS #########
 
     async def progress_bar(self, type=1):
-        self.dialog.progress.setMaximum(100)
-        i = 0
         if type == 1:
             task = asyncio.create_task(self.fetchVariants())
         elif type == 2:

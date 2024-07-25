@@ -1,0 +1,1891 @@
+[
+    {
+        "uuid": "80311f74-cb9c-11e7-91b3-f14933871d3a",
+        "name": "Автосамосвал",
+        "created_at": "2017-11-17 16:37:48",
+        "updated_at": "2019-03-01 08:50:04",
+        "component": "road",
+        "is_trailer": false,
+        "icon": "truck-map",
+        "category": "road"
+    },
+    {
+        "uuid": "5cce180e-85c0-11e9-8e8e-02f42b8104ea",
+        "name": "Машина для укладки брусчатки и тротуарной плитки",
+        "created_at": "2019-06-03 08:28:04",
+        "updated_at": "2019-06-03 08:28:04",
+        "component": "road",
+        "is_trailer": false,
+        "category": "road"
+    },
+    {
+        "uuid": "9a8e79f2-cb9c-11e7-bb4c-612e13872ba2",
+        "name": "Бензовоз",
+        "created_at": "2017-11-17 16:38:32",
+        "updated_at": "2017-11-17 16:38:32",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "c17ec85a-cb9c-11e7-b0a0-0949a539a4e7",
+        "name": "Бункеровоз",
+        "created_at": "2017-11-17 16:39:37",
+        "updated_at": "2017-11-17 16:39:37",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "9dfc6b16-cb9d-11e7-b2c6-d1e22e046db8",
+        "name": "Дорожная служба",
+        "created_at": "2017-11-17 16:45:47",
+        "updated_at": "2017-11-17 16:45:47",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "b1787770-e4ce-11ed-b4dc-02f42b6c1ed7",
+        "name": "Пожарный",
+        "created_at": "2023-04-27 10:39:51",
+        "updated_at": "2023-04-27 10:39:51",
+        "component": "transport",
+        "is_trailer": false
+    },
+    {
+        "uuid": "eb3a9a00-cb9e-11e7-9d46-13019c0dcff1",
+        "name": "Контейнеровоз",
+        "created_at": "2017-11-17 16:55:06",
+        "updated_at": "2017-11-17 16:55:06",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "d24086f8-cb9f-11e7-9c7a-09aac3860b96",
+        "name": "Погрузчик",
+        "created_at": "2017-11-17 17:01:34",
+        "updated_at": "2017-11-17 17:01:34",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "f857a632-cb9f-11e7-ba10-2d1c88fa6dde",
+        "name": "Подметательно-уборочная машина",
+        "created_at": "2017-11-17 17:02:38",
+        "updated_at": "2017-11-17 17:02:38",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "01f91086-cba0-11e7-82ca-0d1be156e0f6",
+        "name": "Поливомоечная с песком и плужно-щеточным оборудов.",
+        "created_at": "2017-11-17 17:02:54",
+        "updated_at": "2017-11-17 17:02:54",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "39d9e7d2-cba0-11e7-98db-0316749f69b0",
+        "name": "Рем.-экспл. машина",
+        "created_at": "2017-11-17 17:04:28",
+        "updated_at": "2017-11-17 17:04:28",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "74e4061e-cba0-11e7-a9d0-7f955f812138",
+        "name": "Седельный тягач",
+        "created_at": "2017-11-17 17:06:07",
+        "updated_at": "2017-11-17 17:06:07",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "95cd4228-cba0-11e7-8e79-f7ce002e5888",
+        "name": "Снегопогрузчик",
+        "created_at": "2017-11-17 17:07:02",
+        "updated_at": "2017-11-17 17:07:02",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "ecec6ba2-f663-11e9-a7b2-02f42be5cd69",
+        "name": "Погрузчик",
+        "created_at": "2019-10-24 16:41:04",
+        "updated_at": "2019-10-24 16:41:04",
+        "component": "communal",
+        "is_trailer": false,
+        "category": "communal"
+    },
+    {
+        "uuid": "cadc4458-cb9d-11e7-8f0c-bd05d3911f36",
+        "name": "КДМ",
+        "created_at": "2017-11-17 16:47:03",
+        "updated_at": "2019-02-28 12:19:20",
+        "component": "road",
+        "is_trailer": false,
+        "icon": "truck-map",
+        "category": "road"
+    },
+    {
+        "uuid": "58a4e620-cb9c-11e7-bee0-0b5cec57f614",
+        "name": "Автобус",
+        "created_at": "2017-11-17 16:36:42",
+        "updated_at": "2019-02-28 12:55:48",
+        "component": "road",
+        "is_trailer": false,
+        "icon": "bus",
+        "category": "road"
+    },
+    {
+        "uuid": "aef0ee2a-cb9c-11e7-818e-8b99eb9fc82a",
+        "name": "Бульдозер",
+        "created_at": "2017-11-17 16:39:06",
+        "updated_at": "2019-03-01 09:32:14",
+        "component": "road",
+        "is_trailer": false,
+        "icon": "bull",
+        "category": "road"
+    },
+    {
+        "uuid": "e8cdebee-8f66-11ea-96ff-02f42b7add2b",
+        "name": "Вакуумно-подметальная машина",
+        "created_at": "2020-05-06 09:57:54",
+        "updated_at": "2020-05-06 09:57:54",
+        "component": "communal",
+        "is_trailer": false,
+        "category": "communal"
+    },
+    {
+        "uuid": "7a2ee610-85cc-11e9-89e8-02f42b8104ea",
+        "name": "Автомобиль ямочного ремонта дорог",
+        "created_at": "2019-06-03 09:54:48",
+        "updated_at": "2019-06-05 21:45:49",
+        "component": "road",
+        "is_trailer": false,
+        "category": "road"
+    },
+    {
+        "uuid": "acb3544c-e436-11e7-a04c-d1656e75feb4",
+        "name": "Прицеп",
+        "created_at": "2017-12-19 00:01:53",
+        "updated_at": "2017-12-22 15:55:25",
+        "is_trailer": true
+    },
+    {
+        "uuid": "acb6da4a-e436-11e7-9845-c78a5c9c3bd4",
+        "name": "Полуприцеп",
+        "created_at": "2017-12-19 00:01:53",
+        "updated_at": "2017-12-22 15:55:25",
+        "is_trailer": true
+    },
+    {
+        "uuid": "d7cf2b78-fc56-11e7-bc55-02f42bbf4cf5",
+        "name": "Прицеп",
+        "created_at": "2018-01-18 16:52:37",
+        "updated_at": "2018-01-18 16:52:37",
+        "component": "road",
+        "is_trailer": true
+    },
+    {
+        "uuid": "f8659598-ff62-11e7-a11d-02f42b8aaa75",
+        "name": "9",
+        "created_at": "2018-01-22 13:56:59",
+        "updated_at": "2018-01-22 13:56:59",
+        "is_trailer": false
+    },
+    {
+        "uuid": "d4145408-ff63-11e7-9ad9-02f42b8aaa75",
+        "name": "Самосвал",
+        "created_at": "2018-01-22 14:03:08",
+        "updated_at": "2018-01-22 14:03:08",
+        "is_trailer": false
+    },
+    {
+        "uuid": "d6044534-ff63-11e7-b27e-02f42b8aaa75",
+        "name": "Мусоровоз",
+        "created_at": "2018-01-22 14:03:11",
+        "updated_at": "2018-01-22 14:03:11",
+        "is_trailer": false
+    },
+    {
+        "uuid": "d784c5c8-ff63-11e7-a3af-02f42b8aaa75",
+        "name": "Экскаватор планировщик",
+        "created_at": "2018-01-22 14:03:14",
+        "updated_at": "2018-01-22 14:03:14",
+        "is_trailer": false
+    },
+    {
+        "uuid": "d7eeabf0-ff63-11e7-a5ab-02f42b8aaa75",
+        "name": "Грузопассажирский",
+        "created_at": "2018-01-22 14:03:14",
+        "updated_at": "2018-01-22 14:03:14",
+        "is_trailer": false
+    },
+    {
+        "uuid": "d90f42d8-ff63-11e7-8001-02f42b8aaa75",
+        "name": "Фургон",
+        "created_at": "2018-01-22 14:03:16",
+        "updated_at": "2018-01-22 14:03:16",
+        "is_trailer": false
+    },
+    {
+        "uuid": "d957123e-ff63-11e7-80bf-02f42b8aaa75",
+        "name": "Легковой",
+        "created_at": "2018-01-22 14:03:17",
+        "updated_at": "2018-01-22 14:03:17",
+        "is_trailer": false
+    },
+    {
+        "uuid": "db87116c-ff63-11e7-85c3-02f42b8aaa75",
+        "name": "Трактор с навесным оборудованием",
+        "created_at": "2018-01-22 14:03:20",
+        "updated_at": "2018-01-22 14:03:20",
+        "is_trailer": false
+    },
+    {
+        "uuid": "dfc71380-ff63-11e7-a993-02f42b8aaa75",
+        "name": "Бульдозер ",
+        "created_at": "2018-01-22 14:03:27",
+        "updated_at": "2018-01-22 14:03:27",
+        "is_trailer": false
+    },
+    {
+        "uuid": "e0ff8ea8-ff63-11e7-8d2d-02f42b8aaa75",
+        "name": "Экскаватор ",
+        "created_at": "2018-01-22 14:03:29",
+        "updated_at": "2018-01-22 14:03:29",
+        "is_trailer": false
+    },
+    {
+        "uuid": "e20a5dc8-ff63-11e7-af8d-02f42b8aaa75",
+        "name": "ПУ-прицепная",
+        "created_at": "2018-01-22 14:03:31",
+        "updated_at": "2018-01-22 14:03:31",
+        "is_trailer": false
+    },
+    {
+        "uuid": "e2727b9c-ff63-11e7-8d28-02f42b8aaa75",
+        "name": "ВПУ-прицепная",
+        "created_at": "2018-01-22 14:03:32",
+        "updated_at": "2018-01-22 14:03:32",
+        "is_trailer": false
+    },
+    {
+        "uuid": "e2b9acd8-ff63-11e7-aff9-02f42b8aaa75",
+        "name": "Машина для укладки брусчатки и тротуарной плитки",
+        "created_at": "2018-01-22 14:03:32",
+        "updated_at": "2018-01-22 14:03:32",
+        "is_trailer": false
+    },
+    {
+        "uuid": "e379617c-ff63-11e7-8cdf-02f42b8aaa75",
+        "name": "прицепной компрессор",
+        "created_at": "2018-01-22 14:03:34",
+        "updated_at": "2018-01-22 14:03:34",
+        "is_trailer": false
+    },
+    {
+        "uuid": "e3d6ed10-ff63-11e7-9b6c-02f42b8aaa75",
+        "name": "комплект обор-ния для ремонта асфальто-бетонного покрытия",
+        "created_at": "2018-01-22 14:03:34",
+        "updated_at": "2018-01-22 14:03:34",
+        "is_trailer": false
+    },
+    {
+        "uuid": "e41c478e-ff63-11e7-b538-02f42b8aaa75",
+        "name": "Битумовоз",
+        "created_at": "2018-01-22 14:03:35",
+        "updated_at": "2018-01-22 14:03:35",
+        "is_trailer": false
+    },
+    {
+        "uuid": "e54dace2-ff63-11e7-b5a3-02f42b8aaa75",
+        "name": "Прицеп ",
+        "created_at": "2018-01-22 14:03:37",
+        "updated_at": "2018-01-22 14:03:37",
+        "is_trailer": false
+    },
+    {
+        "uuid": "9e02dc24-0b4b-11e8-8c62-02f42bae586c",
+        "name": "Мусоровоз",
+        "created_at": "2018-02-06 17:40:03",
+        "updated_at": "2018-02-07 17:20:50",
+        "component": "communal",
+        "is_trailer": false
+    },
+    {
+        "uuid": "0b6ec30c-1ce2-11e8-b1f9-02f42b31f3d0",
+        "name": "Рециклер/пескоразбрасыватель/бочка",
+        "created_at": "2018-03-01 02:49:41",
+        "updated_at": "2019-05-29 16:32:00",
+        "component": "road",
+        "is_trailer": true
+    },
+    {
+        "uuid": "ac8b88b0-cb9d-11e7-91d7-9d5d170ab6db",
+        "name": "Каток",
+        "created_at": "2017-11-17 16:46:12",
+        "updated_at": "2019-05-29 16:34:44",
+        "component": "road",
+        "is_trailer": false,
+        "icon": "bull",
+        "category": "road"
+    },
+    {
+        "uuid": "14e5abda-0d8d-11e8-858e-02f42b201305",
+        "name": "Мини-погрузчик",
+        "created_at": "2018-02-09 14:33:42",
+        "updated_at": "2018-02-09 14:33:42",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "ee1fe614-1ce1-11e8-8239-02f42b31f3d0",
+        "name": "Дорожный мастер",
+        "created_at": "2018-03-01 02:48:52",
+        "updated_at": "2018-03-01 02:48:52",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "fcd9ccec-1ce1-11e8-a8b7-02f42b31f3d0",
+        "name": "Поливомоечная машина без щёточного оборудования",
+        "created_at": "2018-03-01 02:49:17",
+        "updated_at": "2018-03-01 02:49:17",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "fdd52060-1ce1-11e8-ab26-02f42b31f3d0",
+        "name": "Поливомоечная с щёточным оборудованием",
+        "created_at": "2018-03-01 02:49:18",
+        "updated_at": "2018-03-01 02:49:18",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "fec84b50-1ce1-11e8-852c-02f42b31f3d0",
+        "name": "Поливомоечная, пескоразбрасывающим и плужно-щёточным оборудованием",
+        "created_at": "2018-03-01 02:49:20",
+        "updated_at": "2018-03-01 02:49:20",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "02413dd2-1ce2-11e8-903d-02f42b31f3d0",
+        "name": "Поливомоечным, пескоразбрасывающим и плужно-щёточным оборудованием",
+        "created_at": "2018-03-01 02:49:26",
+        "updated_at": "2018-03-01 02:49:26",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "efc2e9d0-1ce1-11e8-8089-02f42b31f3d0",
+        "name": "Легковое ТС",
+        "created_at": "2018-03-01 02:48:55",
+        "updated_at": "2019-03-01 20:08:32",
+        "component": "road",
+        "is_trailer": false,
+        "category": "road"
+    },
+    {
+        "uuid": "0487c6b0-1ce2-11e8-9833-02f42b31f3d0",
+        "name": "Бортовой",
+        "created_at": "2018-03-01 02:49:29",
+        "updated_at": "2018-03-01 02:49:29",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "05042c46-1ce2-11e8-b945-02f42b31f3d0",
+        "name": "Машина аварийно-ремонтная",
+        "created_at": "2018-03-01 02:49:30",
+        "updated_at": "2018-03-01 02:49:30",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "058ab78e-1ce2-11e8-8b90-02f42b31f3d0",
+        "name": "Экскаватор-планировщик",
+        "created_at": "2018-03-01 02:49:31",
+        "updated_at": "2018-03-01 02:49:31",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "9bd5221e-cba3-11e7-b824-930b570c3d87",
+        "name": "Экскаватор",
+        "created_at": "2017-11-17 17:28:41",
+        "updated_at": "2019-05-30 11:50:58",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "aa07c7ce-cba3-11e7-9444-b9248ddc2ad2",
+        "name": "Экскаватор-погрузчик",
+        "created_at": "2017-11-17 17:29:05",
+        "updated_at": "2019-05-30 11:55:25",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "0dadc6f4-1ce2-11e8-9fc1-02f42b31f3d0",
+        "name": "Шнекоротор",
+        "created_at": "2018-03-01 02:49:45",
+        "updated_at": "2018-03-01 02:49:45",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "19b0296a-1ce2-11e8-95c4-02f42b31f3d0",
+        "name": "Фреза дорожная",
+        "created_at": "2018-03-01 02:50:05",
+        "updated_at": "2018-03-01 02:50:05",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "6367826e-276a-11e8-86d6-02f42b70f438",
+        "name": "Экскаватор",
+        "created_at": "2018-03-14 12:30:52",
+        "updated_at": "2018-03-14 12:30:52",
+        "component": "communal",
+        "is_trailer": false
+    },
+    {
+        "uuid": "2404ccae-1ce2-11e8-8e6f-02f42b31f3d0",
+        "name": "Компрессорная установка ",
+        "created_at": "2018-03-01 02:50:22",
+        "updated_at": "2018-03-01 02:50:22",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "4bcc73fe-1ce2-11e8-8bca-02f42b31f3d0",
+        "name": "Ремонтно-эксплуатационная машина",
+        "created_at": "2018-03-01 02:51:29",
+        "updated_at": "2018-03-01 02:51:29",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "273b7798-302d-11e8-a09a-02f42b53e552",
+        "name": "Кран-манипулятор автомобильный",
+        "created_at": "2018-03-25 16:05:12",
+        "updated_at": "2018-03-25 16:05:12",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "1ab5c4ba-7845-11e7-a531-c02c6de2fbfa",
+        "name": "Строительно-дорожная техника",
+        "created_at": "2017-08-03 15:13:05",
+        "updated_at": "2018-05-18 16:17:38",
+        "component": "kiutr",
+        "is_trailer": false,
+        "category": "road"
+    },
+    {
+        "uuid": "1ab57b72-7845-11e7-83d2-2a419984176d",
+        "name": "Троллейбус",
+        "created_at": "2017-08-03 15:13:05",
+        "updated_at": "2018-05-23 13:53:52",
+        "component": "kiutr",
+        "is_trailer": false,
+        "category": "trolleybus",
+        "vis_name": "Троллейбус"
+    },
+    {
+        "uuid": "3d3e8a5e-4336-4103-ac21-a7fe42361b7d",
+        "name": "Автобетоносмеситель",
+        "created_at": "2018-08-14 00:00:01",
+        "updated_at": "2019-02-28 12:56:33",
+        "component": "road",
+        "is_trailer": false,
+        "icon": "tank-truck",
+        "category": "road"
+    },
+    {
+        "uuid": "a000e072-2da9-11e8-889d-02f42bc87ccc",
+        "name": "Автотопливозаправщик",
+        "created_at": "2018-03-22 11:18:39",
+        "updated_at": "2019-03-01 09:02:21",
+        "component": "road",
+        "is_trailer": false,
+        "icon": "tank-truck",
+        "category": "road"
+    },
+    {
+        "uuid": "96b56349-3081-4b26-aa27-65328b07c783",
+        "name": "Маркировщик",
+        "created_at": "2018-08-14 00:00:01",
+        "updated_at": "2018-08-14 00:00:01",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "a11088c9-ffd4-491d-a252-5ffa616c23ae",
+        "name": "Машина для очистки канализационных сетей",
+        "created_at": "2018-08-14 00:00:01",
+        "updated_at": "2018-08-14 00:00:01",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "a1e31c05-c511-4d1b-a153-26a913cc14c7",
+        "name": "Машина дорожная разметочная",
+        "created_at": "2018-08-14 00:00:01",
+        "updated_at": "2018-08-14 00:00:01",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "6f3d907c-f02f-40d2-86e3-c3f2e20b68af",
+        "name": "Машина сваебойная",
+        "created_at": "2018-08-14 00:00:01",
+        "updated_at": "2018-08-14 00:00:01",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "8970e3da-a170-11e8-bbbd-02f42b5dd4dd",
+        "name": "Автобитумовоз",
+        "created_at": "2018-08-16 19:22:14",
+        "updated_at": "2018-08-16 19:22:14",
+        "component": "road",
+        "is_trailer": false,
+        "icon": "tank-truck",
+        "category": "road"
+    },
+    {
+        "uuid": "64194286-eda0-11e8-aa7a-02f42b58314b",
+        "name": "1",
+        "created_at": "2018-11-21 18:16:16",
+        "updated_at": "2018-11-21 18:16:16",
+        "component": "operator",
+        "is_trailer": false,
+        "category": "communal",
+        "vis_name": "1"
+    },
+    {
+        "uuid": "4233e53e-1ce2-11e8-bc25-02f42b31f3d0",
+        "name": "Поливомоечная машина ",
+        "created_at": "2018-03-01 02:51:13",
+        "updated_at": "2018-03-01 02:51:13",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "944419e2-1d47-11e8-b8a9-02f42b31f3d0",
+        "name": "Автокран",
+        "created_at": "2018-03-01 14:56:30",
+        "updated_at": "2019-03-01 08:50:11",
+        "component": "road",
+        "is_trailer": false,
+        "category": "road"
+    },
+    {
+        "uuid": "be3d112c-93db-11e7-8a11-54c109ed8ef3",
+        "name": "Легковой ТС",
+        "created_at": "2017-09-07 17:49:25",
+        "updated_at": "2018-05-18 16:17:11",
+        "component": "kiutr",
+        "is_trailer": false,
+        "category": "semicargo"
+    },
+    {
+        "uuid": "1ab62a36-7845-11e7-8745-a0913ad48b21",
+        "name": "Школьные автобусы",
+        "created_at": "2017-08-03 15:13:05",
+        "updated_at": "2018-05-18 16:17:57",
+        "component": "kiutr",
+        "is_trailer": false,
+        "category": "bus"
+    },
+    {
+        "uuid": "3f2c0098-e6f4-11ec-8fe6-02f42bd59245",
+        "name": "Мойка",
+        "created_at": "2022-06-08 09:28:44",
+        "updated_at": "2022-06-08 09:28:44",
+        "component": "garbage",
+        "is_trailer": false
+    },
+    {
+        "uuid": "e4842af8-0d92-4ae2-866a-2013bcd306c5",
+        "name": "Битумовоз",
+        "created_at": "2018-08-14 00:00:01",
+        "updated_at": "2018-08-14 00:00:01",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "49910621-e08b-4cf9-ac08-77580dbf9f23",
+        "name": "Копровая установка",
+        "created_at": "2018-08-14 00:00:01",
+        "updated_at": "2018-08-14 00:00:01",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "1683c1e1-ff8a-4b03-bf7b-484a36a23520",
+        "name": "Косилка",
+        "created_at": "2018-08-14 00:00:01",
+        "updated_at": "2018-08-14 00:00:01",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "a7d54194-f760-4acc-b03d-dc9fed9eee44",
+        "name": "Мини-погрузчик с бортовым поворотом",
+        "created_at": "2018-08-14 00:00:01",
+        "updated_at": "2018-08-14 00:00:01",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "cbd4a50c-83d2-455d-abfa-1291240258c7",
+        "name": "Пескоразбрасыватель",
+        "created_at": "2018-08-14 00:00:01",
+        "updated_at": "2018-08-14 00:00:01",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "c81de90f-83ca-4b23-b4a6-544ee8a00d47",
+        "name": "Поливомоечная",
+        "created_at": "2018-08-14 00:00:01",
+        "updated_at": "2018-08-14 00:00:01",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "e2fdbbf7-01a1-46a7-b82e-cfbdb9c38f66",
+        "name": "Полуприцеп",
+        "created_at": "2018-08-14 00:00:01",
+        "updated_at": "2018-08-14 00:00:01",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "312ace0a-dd08-4128-80aa-9d072a00485d",
+        "name": "Автоцистерна вакумная",
+        "created_at": "2018-08-14 00:00:01",
+        "updated_at": "2019-03-01 09:09:56",
+        "component": "road",
+        "is_trailer": false,
+        "icon": "tank-truck",
+        "category": "road"
+    },
+    {
+        "uuid": "2468e944-2db5-11e8-92c9-02f42bc87ccc",
+        "name": "Мусоровоз",
+        "created_at": "2018-03-22 12:41:05",
+        "updated_at": "2019-02-28 12:44:42",
+        "component": "road",
+        "is_trailer": false,
+        "icon": "truck-map",
+        "category": "road"
+    },
+    {
+        "uuid": "2ddb8c12-59c3-479b-83b2-238a792794ef",
+        "name": "Автоцистерна-цементовоз",
+        "created_at": "2018-08-14 00:00:01",
+        "updated_at": "2019-03-01 09:10:08",
+        "component": "road",
+        "is_trailer": false,
+        "icon": "tank-truck",
+        "category": "road"
+    },
+    {
+        "uuid": "1ff3e01d-bc0f-44b1-ba67-186451f48f54",
+        "name": "Разбрасыватель песка",
+        "created_at": "2018-08-14 00:00:01",
+        "updated_at": "2018-08-14 00:00:01",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "28d14ae6-2c5f-49d6-a1b1-f669340e67d8",
+        "name": "Рециклер асфальтобетона",
+        "created_at": "2018-08-14 00:00:01",
+        "updated_at": "2018-08-14 00:00:01",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "079f01d6-0203-11e9-8df8-02f42b30fdb0",
+        "name": "КДМ",
+        "created_at": "2018-12-17 16:52:44",
+        "updated_at": "2019-11-25 10:08:16",
+        "component": "communal",
+        "is_trailer": false,
+        "category": "communal"
+    },
+    {
+        "uuid": "cf4a0106-c8e4-4c7c-bf78-1db165f9144d",
+        "name": "Фургон",
+        "created_at": "2018-08-14 00:00:01",
+        "updated_at": "2018-08-14 00:00:01",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "76aacb7c-eda0-11e8-95a3-02f42b091964",
+        "name": "1",
+        "created_at": "2018-11-21 18:16:47",
+        "updated_at": "2018-11-21 18:16:47",
+        "component": "operator",
+        "is_trailer": false,
+        "category": "communal",
+        "vis_name": "1"
+    },
+    {
+        "uuid": "da919ce6-edab-11e8-8166-02f42b091964",
+        "name": "1",
+        "created_at": "2018-11-21 19:38:19",
+        "updated_at": "2018-11-21 19:38:19",
+        "component": "operator",
+        "is_trailer": false,
+        "category": "communal",
+        "vis_name": "1"
+    },
+    {
+        "uuid": "74089c66-276a-11e8-89ea-02f42b70f438",
+        "name": "Трактор",
+        "created_at": "2018-03-14 12:31:20",
+        "updated_at": "2018-03-14 12:31:20",
+        "component": "communal",
+        "is_trailer": false
+    },
+    {
+        "uuid": "6f5db21a-7210-11ec-af0e-02f42b764572",
+        "name": " прочее",
+        "created_at": "2022-01-10 15:25:45",
+        "updated_at": "2022-05-16 18:11:57",
+        "component": "garbage",
+        "is_trailer": false
+    },
+    {
+        "uuid": "1ab5ea58-7845-11e7-8a51-3f3d31e2328a",
+        "name": "Мусоровозы",
+        "created_at": "2017-08-03 15:13:05",
+        "updated_at": "2018-05-18 16:17:33",
+        "component": "kiutr",
+        "is_trailer": false,
+        "category": "communal"
+    },
+    {
+        "uuid": "1ab5a4a8-7845-11e7-9160-c3afbe0af857",
+        "name": "Трамвай",
+        "created_at": "2017-08-03 15:13:05",
+        "updated_at": "2018-05-23 13:54:05",
+        "component": "kiutr",
+        "is_trailer": false,
+        "category": "tram",
+        "vis_name": "Трамвай"
+    },
+    {
+        "uuid": "c38f9954-eda0-11e8-9a0d-02f42b091964",
+        "name": "1",
+        "created_at": "2018-11-21 18:18:56",
+        "updated_at": "2018-11-21 18:18:56",
+        "component": "operator",
+        "is_trailer": false,
+        "category": "communal",
+        "vis_name": "1"
+    },
+    {
+        "uuid": "fe88d9dc-0202-11e9-b470-02f42b816866",
+        "name": "Снегопогрузчик",
+        "created_at": "2018-12-17 16:52:29",
+        "updated_at": "2018-12-17 16:52:29",
+        "component": "communal",
+        "is_trailer": false,
+        "category": "communal"
+    },
+    {
+        "uuid": "27d9b27a-0203-11e9-933e-02f42b816866",
+        "name": "Фронтальный погрузчик",
+        "created_at": "2018-12-17 16:53:38",
+        "updated_at": "2018-12-17 16:55:32",
+        "component": "communal",
+        "is_trailer": false,
+        "category": "communal"
+    },
+    {
+        "uuid": "8990834a-e4d0-11ed-99b6-02f42b336398",
+        "name": "Грузовой",
+        "created_at": "2023-04-27 10:53:03",
+        "updated_at": "2023-04-27 10:53:03",
+        "component": "transport",
+        "is_trailer": false
+    },
+    {
+        "uuid": "1e60904c-0203-11e9-b31e-02f42b816866",
+        "name": "Грейдер",
+        "created_at": "2018-12-17 16:53:22",
+        "updated_at": "2018-12-17 16:55:57",
+        "component": "communal",
+        "is_trailer": false,
+        "category": "communal"
+    },
+    {
+        "uuid": "62518a7c-0203-11e9-87d1-02f42b816866",
+        "name": "Легковой автомобиль",
+        "created_at": "2018-12-17 16:55:16",
+        "updated_at": "2018-12-17 16:56:06",
+        "component": "communal",
+        "is_trailer": false,
+        "category": "communal"
+    },
+    {
+        "uuid": "3b0a820c-0203-11e9-8693-02f42b30fdb0",
+        "name": "Малотоннажный грузовик",
+        "created_at": "2018-12-17 16:54:11",
+        "updated_at": "2018-12-17 16:56:17",
+        "component": "communal",
+        "is_trailer": false,
+        "category": "communal"
+    },
+    {
+        "uuid": "492031c0-0203-11e9-a87b-02f42b816866",
+        "name": "Поливомоечная машина",
+        "created_at": "2018-12-17 16:54:34",
+        "updated_at": "2018-12-17 16:56:35",
+        "component": "communal",
+        "is_trailer": false,
+        "category": "communal"
+    },
+    {
+        "uuid": "5445cac4-0203-11e9-864b-02f42b816866",
+        "name": "Пылесос",
+        "created_at": "2018-12-17 16:54:53",
+        "updated_at": "2018-12-17 16:56:42",
+        "component": "communal",
+        "is_trailer": false,
+        "category": "communal"
+    },
+    {
+        "uuid": "8536c06a-0371-11e9-bf2b-02f42b816866",
+        "name": "МДК",
+        "created_at": "2018-12-19 12:36:11",
+        "updated_at": "2018-12-19 12:36:11",
+        "component": "communal",
+        "is_trailer": false,
+        "category": "communal"
+    },
+    {
+        "uuid": "8be7f550-0371-11e9-b18f-02f42b30fdb0",
+        "name": "МКМ",
+        "created_at": "2018-12-19 12:36:22",
+        "updated_at": "2018-12-19 12:36:22",
+        "component": "communal",
+        "is_trailer": false,
+        "category": "communal"
+    },
+    {
+        "uuid": "7761e50e-cb9c-11e7-9ea8-2127245b4e04",
+        "name": "Автогудронатор",
+        "created_at": "2017-11-17 16:37:33",
+        "updated_at": "2019-02-28 16:31:11",
+        "component": "road",
+        "is_trailer": false,
+        "icon": "kdm",
+        "category": "road"
+    },
+    {
+        "uuid": "260f4784-2db5-11e8-b85f-02f42b8904fe",
+        "name": "Автогидроподъёмник",
+        "created_at": "2018-03-22 12:41:08",
+        "updated_at": "2019-02-28 16:10:09",
+        "component": "road",
+        "is_trailer": false,
+        "icon": "loader",
+        "category": "road"
+    },
+    {
+        "uuid": "143f79ac-0203-11e9-9a83-02f42b816866",
+        "name": "Мини-погрузчик",
+        "created_at": "2018-12-17 16:53:05",
+        "updated_at": "2020-01-10 11:04:46",
+        "component": "communal",
+        "is_trailer": false,
+        "category": "communal"
+    },
+    {
+        "uuid": "7dc9fe82-e332-11e8-a3c7-02f42b70f152",
+        "name": "Автосамосвал",
+        "created_at": "2018-11-08 11:44:23",
+        "updated_at": "2020-01-10 12:38:25",
+        "component": "communal",
+        "is_trailer": false
+    },
+    {
+        "uuid": "41f0895c-4562-11e9-8679-02f42b81d736",
+        "name": "Автогрейдер",
+        "created_at": "2019-03-13 10:33:12",
+        "updated_at": "2019-03-13 10:33:12",
+        "component": "road",
+        "is_trailer": false,
+        "category": "road"
+    },
+    {
+        "uuid": "9f824a82-2da9-11e8-8550-02f42bc87ccc",
+        "name": "Автоэвакуатор",
+        "created_at": "2018-03-22 11:18:38",
+        "updated_at": "2019-05-29 16:37:08",
+        "component": "road",
+        "is_trailer": false,
+        "icon": "bus",
+        "category": "road"
+    },
+    {
+        "uuid": "896df616-cb9c-11e7-b570-3102ddfdde2c",
+        "name": "Асфальтоукладчик",
+        "created_at": "2017-11-17 16:38:03",
+        "updated_at": "2019-05-29 16:37:17",
+        "component": "road",
+        "is_trailer": false,
+        "icon": "bull",
+        "category": "road"
+    },
+    {
+        "uuid": "8c158180-839d-11e9-82cb-02f42b8104ea",
+        "name": "Каток грунтовый",
+        "created_at": "2019-05-31 15:13:49",
+        "updated_at": "2019-05-31 15:14:14",
+        "component": "road",
+        "is_trailer": false,
+        "icon": "bull",
+        "category": "road"
+    },
+    {
+        "uuid": "9d6308c2-ef3b-11e9-a1ba-02f42be5cd69",
+        "name": "Снегоочиститель роторный",
+        "created_at": "2019-10-15 14:04:53",
+        "updated_at": "2019-10-15 14:04:53",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "52b2a24c-f0b2-11e9-8402-02f42be5cd69",
+        "name": "Дробильная установка",
+        "created_at": "2019-10-17 10:47:09",
+        "updated_at": "2019-10-17 10:47:09",
+        "component": "road",
+        "is_trailer": false,
+        "category": "road"
+    },
+    {
+        "uuid": "daad7ab2-f0b9-11e9-8e4d-02f42be5cd69",
+        "name": "Форвардер",
+        "created_at": "2019-10-17 11:41:03",
+        "updated_at": "2019-10-17 11:41:03",
+        "component": "road",
+        "is_trailer": false,
+        "category": "road"
+    },
+    {
+        "uuid": "46910652-f0bc-11e9-bfe6-02f42b628678",
+        "name": "Погрузчик вилочный",
+        "created_at": "2019-10-17 11:58:23",
+        "updated_at": "2019-10-17 11:58:23",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "9e1acbec-f0bc-11e9-8ac9-02f42b628678",
+        "name": "Вакуумная уборочная коммунальная маш.",
+        "created_at": "2019-10-17 12:00:50",
+        "updated_at": "2019-10-17 12:01:09",
+        "component": "road",
+        "is_trailer": false,
+        "category": "road"
+    },
+    {
+        "uuid": "58631d6c-331d-11eb-8c32-02f42b3394c3",
+        "name": "Бункеровоз МК-8512-04 на шасси ISUZU NQR90L-H",
+        "created_at": "2020-11-30 18:04:29",
+        "updated_at": "2022-05-16 18:11:57",
+        "component": "garbage",
+        "is_trailer": false
+    },
+    {
+        "uuid": "5a46f9bc-26e2-11e9-9097-02f42b42b7ca",
+        "name": "Самосвал",
+        "created_at": "2019-02-02 15:02:03",
+        "updated_at": "2022-05-16 18:11:57",
+        "component": "garbage",
+        "is_trailer": false
+    },
+    {
+        "uuid": "5b818694-26e2-11e9-81cf-02f42b42b7ca",
+        "name": "Снегоочиститель",
+        "created_at": "2019-02-02 15:02:05",
+        "updated_at": "2022-05-16 18:11:57",
+        "component": "garbage",
+        "is_trailer": false
+    },
+    {
+        "uuid": "5cbbc236-33d8-11eb-ab40-02f42b3394c3",
+        "name": "СПЕЦИАЛЬНОЕ",
+        "created_at": "2020-12-01 16:23:12",
+        "updated_at": "2022-05-16 18:11:57",
+        "component": "garbage",
+        "is_trailer": false
+    },
+    {
+        "uuid": "60ae3f72-33d8-11eb-b78a-02f42b3394c3",
+        "name": "ГРУЗОВОЙ ПРОЧЕЕ",
+        "created_at": "2020-12-01 16:23:19",
+        "updated_at": "2022-05-16 18:11:57",
+        "component": "garbage",
+        "is_trailer": false
+    },
+    {
+        "uuid": "69c6932c-10a8-11ec-a797-02f42bd3ec5f",
+        "name": "Грузовой прочее",
+        "created_at": "2021-09-08 16:26:45",
+        "updated_at": "2022-05-16 18:11:57",
+        "component": "garbage",
+        "is_trailer": false
+    },
+    {
+        "uuid": "6bd095e4-33d8-11eb-837f-02f42b3394c3",
+        "name": "Специализированный прочее",
+        "created_at": "2020-12-01 16:23:37",
+        "updated_at": "2022-05-16 18:11:57",
+        "component": "garbage",
+        "is_trailer": false
+    },
+    {
+        "uuid": "776e581a-7210-11ec-8e9d-02f42b257077",
+        "name": " самосвал",
+        "created_at": "2022-01-10 15:25:59",
+        "updated_at": "2022-05-16 18:11:57",
+        "component": "garbage",
+        "is_trailer": false
+    },
+    {
+        "uuid": "7959286c-7210-11ec-b6ff-02f42b257077",
+        "name": " фургон",
+        "created_at": "2022-01-10 15:26:02",
+        "updated_at": "2022-05-16 18:11:57",
+        "component": "garbage",
+        "is_trailer": false
+    },
+    {
+        "uuid": "8bd4a0b4-5a2b-11eb-949b-02f42b3394c3",
+        "name": "Погрузчик фронтальный одноковшовый",
+        "created_at": "2021-01-19 10:54:24",
+        "updated_at": "2021-01-19 10:54:24",
+        "component": "road",
+        "is_trailer": false,
+        "icon": "kdm",
+        "category": "road"
+    },
+    {
+        "uuid": "79a5fc82-7210-11ec-9d0a-02f42b257077",
+        "name": " тягач седельный",
+        "created_at": "2022-01-10 15:26:02",
+        "updated_at": "2022-05-16 18:11:57",
+        "component": "garbage",
+        "is_trailer": false
+    },
+    {
+        "uuid": "b847a8de-9090-11ec-8f31-02f42bce191b",
+        "name": "Специальное ",
+        "created_at": "2022-02-18 10:59:38",
+        "updated_at": "2022-05-16 18:11:57",
+        "component": "garbage",
+        "is_trailer": false
+    },
+    {
+        "uuid": "f41a111a-1b99-11ec-a9d3-02f42bd3ec5f",
+        "name": "САМОСВАЛ",
+        "created_at": "2021-09-22 14:40:58",
+        "updated_at": "2022-05-16 18:11:57",
+        "component": "garbage",
+        "is_trailer": false
+    },
+    {
+        "uuid": "776237f8-b328-11eb-a29e-02f42b38c917",
+        "name": "Микроавтобус",
+        "created_at": "2021-05-12 16:46:34",
+        "updated_at": "2021-05-12 16:46:34",
+        "component": "kiutr",
+        "is_trailer": false
+    },
+    {
+        "uuid": "588d5b50-99f5-11e7-b71c-322987dfa6b1",
+        "name": "Трактор",
+        "created_at": "2017-09-15 12:07:48",
+        "updated_at": "2021-08-04 16:58:51",
+        "component": "kiutr",
+        "is_trailer": false,
+        "category": "road"
+    },
+    {
+        "uuid": "19571fa4-dcf5-11ed-bcd3-02f42b6c1ed7",
+        "name": "Мини-трактор",
+        "created_at": "2023-04-17 10:54:36",
+        "updated_at": "2023-04-17 10:54:36",
+        "component": "communal",
+        "is_trailer": false
+    },
+    {
+        "uuid": "9fec6194-6f41-11ee-ad3d-02f42b4809ad",
+        "name": "ВКМ2020",
+        "created_at": "2023-10-20 15:10:14",
+        "updated_at": "2023-10-20 15:10:14",
+        "component": "communal",
+        "is_trailer": false
+    },
+    {
+        "uuid": "f980bfe8-2051-11ec-907f-02f42bccd988",
+        "name": "Специальное",
+        "created_at": "2021-09-28 14:48:19",
+        "updated_at": "2022-05-16 18:11:57",
+        "component": "garbage",
+        "is_trailer": false
+    },
+    {
+        "uuid": "faeee5a6-f457-11eb-9b1b-02f42b3858a6",
+        "name": "Cамосвал",
+        "created_at": "2021-08-03 15:40:27",
+        "updated_at": "2022-05-16 18:11:57",
+        "component": "garbage",
+        "is_trailer": false
+    },
+    {
+        "uuid": "8c520e4e-b7c4-11ec-bf69-02f42bcb3973",
+        "name": "Мультилифт",
+        "created_at": "2022-04-09 08:18:53",
+        "updated_at": "2022-05-16 18:11:57",
+        "component": "garbage",
+        "is_trailer": false,
+        "icon": "truck-map",
+        "category": "communal"
+    },
+    {
+        "uuid": "c27b89ce-ce07-11ec-bd3e-02f42b98bbb8",
+        "name": "Ломовоз",
+        "created_at": "2022-05-07 16:15:26",
+        "updated_at": "2022-05-16 18:11:57",
+        "component": "garbage",
+        "is_trailer": false,
+        "icon": "truck-map",
+        "category": "communal"
+    },
+    {
+        "uuid": "4fb22eb0-331d-11eb-be1a-02f42b3394c3",
+        "name": "Мусоровоз ТКО",
+        "created_at": "2020-11-30 18:04:14",
+        "updated_at": "2022-05-16 18:11:57",
+        "component": "garbage",
+        "is_trailer": false,
+        "icon": "truck-map",
+        "category": "communal"
+    },
+    {
+        "uuid": "53bf452e-331d-11eb-986d-02f42b3394c3",
+        "name": "Мусоровоз РСО",
+        "created_at": "2020-11-30 18:04:21",
+        "updated_at": "2022-05-16 18:11:57",
+        "component": "garbage",
+        "is_trailer": false,
+        "icon": "truck-map",
+        "category": "communal"
+    },
+    {
+        "uuid": "52b0cc20-331d-11eb-9cbf-02f42b3394c3",
+        "name": "Бункеровоз",
+        "created_at": "2020-11-30 18:04:19",
+        "updated_at": "2022-05-16 18:11:57",
+        "component": "garbage",
+        "is_trailer": false,
+        "icon": "truck-map",
+        "category": "communal"
+    },
+    {
+        "uuid": "2834cd48-331d-11eb-94b5-02f42b6ebb23",
+        "name": "Бункеровоз МК-1412-13 на шасси ГАЗ-C41R13",
+        "created_at": "2020-11-30 18:03:08",
+        "updated_at": "2022-05-16 18:11:57",
+        "component": "garbage",
+        "is_trailer": false
+    },
+    {
+        "uuid": "233476e0-331d-11eb-98bb-02f42b6ebb23",
+        "name": "Мусоровоз КО-427-73 на шасси МАЗ-5340С2",
+        "created_at": "2020-11-30 18:03:00",
+        "updated_at": "2022-05-16 18:11:57",
+        "component": "garbage",
+        "is_trailer": false
+    },
+    {
+        "uuid": "23a64252-331d-11eb-8627-02f42b6ebb23",
+        "name": "Бункеровоз 67065А-53 на шасси ISUZU",
+        "created_at": "2020-11-30 18:03:01",
+        "updated_at": "2022-05-16 18:11:57",
+        "component": "garbage",
+        "is_trailer": false
+    },
+    {
+        "uuid": "257f265c-331d-11eb-8833-02f42b6ebb23",
+        "name": "Мусоровоз МК-8541-04 на шасси ISUZU NQR90L-K",
+        "created_at": "2020-11-30 18:03:04",
+        "updated_at": "2022-05-16 18:11:57",
+        "component": "garbage",
+        "is_trailer": false
+    },
+    {
+        "uuid": "26aaceb4-331d-11eb-b634-02f42b6ebb23",
+        "name": "Мусоровоз CMZL18G 788400 на шасси КАМАЗ-65115-30",
+        "created_at": "2020-11-30 18:03:06",
+        "updated_at": "2022-05-16 18:11:57",
+        "component": "garbage",
+        "is_trailer": false
+    },
+    {
+        "uuid": "27671d12-331d-11eb-abb0-02f42b6ebb23",
+        "name": "Мусоровоз РГ-35 783435 на шасси Scania P360CB6X4",
+        "created_at": "2020-11-30 18:03:07",
+        "updated_at": "2022-05-16 18:11:57",
+        "component": "garbage",
+        "is_trailer": false
+    },
+    {
+        "uuid": "29200786-331d-11eb-8f1f-02f42b6ebb23",
+        "name": "Мусоровоз РГ-30 783430 на шасси Scania P280B4X2NA",
+        "created_at": "2020-11-30 18:03:10",
+        "updated_at": "2022-05-16 18:11:57",
+        "component": "garbage",
+        "is_trailer": false
+    },
+    {
+        "uuid": "29709836-331d-11eb-ae2a-02f42b6ebb23",
+        "name": "Мусоровоз РГ-30 783430 на шасси Scania P250LB4X2HSZ",
+        "created_at": "2020-11-30 18:03:10",
+        "updated_at": "2022-05-16 18:11:57",
+        "component": "garbage",
+        "is_trailer": false
+    },
+    {
+        "uuid": "4fccc1b2-331d-11eb-8add-02f42b3394c3",
+        "name": "Мусоровоз КО-427-72 на шасси КАМАЗ 53605 А5",
+        "created_at": "2020-11-30 18:04:15",
+        "updated_at": "2022-05-16 18:11:57",
+        "component": "garbage",
+        "is_trailer": false
+    },
+    {
+        "uuid": "502d4dac-331d-11eb-84ac-02f42b3394c3",
+        "name": "Мусоровоз РГ-35 783435 на шасси Scania P320B6X2*4NA",
+        "created_at": "2020-11-30 18:04:15",
+        "updated_at": "2022-05-16 18:11:57",
+        "component": "garbage",
+        "is_trailer": false
+    },
+    {
+        "uuid": "520ee09a-331d-11eb-b651-02f42b3394c3",
+        "name": "Бункеровоз МК-3512-03 на шасси МАЗ-534025",
+        "created_at": "2020-11-30 18:04:18",
+        "updated_at": "2022-05-16 18:11:57",
+        "component": "garbage",
+        "is_trailer": false
+    },
+    {
+        "uuid": "532649c8-331d-11eb-91c7-02f42b3394c3",
+        "name": "Мусоровоз CMZL16G 788430 на шасси КАМАЗ 53605-32",
+        "created_at": "2020-11-30 18:04:20",
+        "updated_at": "2022-05-16 18:11:57",
+        "component": "garbage",
+        "is_trailer": false
+    },
+    {
+        "uuid": "53d94118-331d-11eb-b3f5-02f42b3394c3",
+        "name": "Мусоровоз A1293Z на шасси ISUZU NQR90L-H",
+        "created_at": "2020-11-30 18:04:21",
+        "updated_at": "2022-05-16 18:11:57",
+        "component": "garbage",
+        "is_trailer": false
+    },
+    {
+        "uuid": "54af6b62-331d-11eb-a0b4-02f42b3394c3",
+        "name": "Мусоровоз МК-4546-08 на шасси КАМАЗ 65115-А5",
+        "created_at": "2020-11-30 18:04:23",
+        "updated_at": "2022-05-16 18:11:57",
+        "component": "garbage",
+        "is_trailer": false
+    },
+    {
+        "uuid": "54c9d29a-331d-11eb-b5bb-02f42b3394c3",
+        "name": "Мусоровоз МК-4546-06 на шасси КАМАЗ 53605-А5",
+        "created_at": "2020-11-30 18:04:23",
+        "updated_at": "2022-05-16 18:11:57",
+        "component": "garbage",
+        "is_trailer": false
+    },
+    {
+        "uuid": "5781d9e2-331d-11eb-968d-02f42b3394c3",
+        "name": "Бункеровоз МК-4512-04 на шасси КАМАЗ 43255-G5",
+        "created_at": "2020-11-30 18:04:28",
+        "updated_at": "2022-05-16 18:11:57",
+        "component": "garbage",
+        "is_trailer": false
+    },
+    {
+        "uuid": "925348d8-e59d-11ec-af1f-02f42b8efa0d",
+        "name": "Кран Манипулятор",
+        "created_at": "2022-06-06 16:35:46",
+        "updated_at": "2022-06-06 16:35:46",
+        "component": "garbage",
+        "is_trailer": false
+    },
+    {
+        "uuid": "c27eff5c-e7eb-11ec-a7c6-02f42bd59245",
+        "name": "Грузопассажирская",
+        "created_at": "2022-06-09 15:00:30",
+        "updated_at": "2022-06-09 15:00:30",
+        "component": "communal",
+        "is_trailer": false
+    },
+    {
+        "uuid": "451c84e2-e892-11ec-a96e-02f42b8efa0d",
+        "name": "Каток",
+        "created_at": "2022-06-10 10:52:26",
+        "updated_at": "2022-06-10 10:52:26",
+        "component": "communal",
+        "is_trailer": false
+    },
+    {
+        "uuid": "f1890fec-fdce-11ec-8a4e-02f42b575d31",
+        "name": "Автогидроподъемник",
+        "created_at": "2022-07-07 11:29:39",
+        "updated_at": "2022-07-07 11:30:32",
+        "component": "communal",
+        "is_trailer": false
+    },
+    {
+        "uuid": "73c71bc4-cba3-11e7-a9f9-4f6cc6d8ceb2",
+        "name": "Трактор",
+        "created_at": "2017-11-17 17:27:34",
+        "updated_at": "2022-11-23 15:54:43",
+        "component": "road",
+        "is_trailer": false,
+        "icon": "kdm",
+        "category": "road"
+    },
+    {
+        "uuid": "b2d6f458-7738-11eb-b701-02f42b4c8a8a",
+        "name": "Самосвал",
+        "created_at": "2021-02-25 10:11:36",
+        "updated_at": "2022-11-24 16:11:36",
+        "component": "road",
+        "is_trailer": false,
+        "icon": "truck-map",
+        "category": "road"
+    },
+    {
+        "uuid": "2024fe2a-9581-11ed-baf4-02f42b7d356c",
+        "name": "Автогрейдер",
+        "created_at": "2023-01-16 12:35:34",
+        "updated_at": "2023-01-16 12:35:34",
+        "component": "communal",
+        "is_trailer": false,
+        "category": "communal"
+    },
+    {
+        "uuid": "1ab53856-7845-11e7-a16c-27f31fd87a20",
+        "name": "Автобус",
+        "created_at": "2017-08-03 15:13:05",
+        "updated_at": "2023-01-24 00:49:17",
+        "component": "kiutr",
+        "is_trailer": false,
+        "icon": "bus",
+        "category": "bus",
+        "vis_name": "Автобус"
+    },
+    {
+        "uuid": "2a7b5046-a78c-11ed-ae50-02f42bc0832c",
+        "name": "Автоцистерна",
+        "created_at": "2023-02-08 11:39:56",
+        "updated_at": "2023-02-08 11:39:56",
+        "component": "transport",
+        "is_trailer": false
+    },
+    {
+        "uuid": "99f066d8-a939-11ed-bf8b-02f42bc0832c",
+        "name": "ИНОЕ",
+        "created_at": "2023-02-10 14:53:57",
+        "updated_at": "2023-02-10 14:53:57",
+        "component": "road",
+        "is_trailer": false,
+        "category": "road"
+    },
+    {
+        "uuid": "2cfb3062-ab69-11ed-b139-02f42b7d356c",
+        "name": "Экскаватор - погрузчик",
+        "created_at": "2023-02-13 09:39:33",
+        "updated_at": "2023-02-13 09:39:33",
+        "component": "communal",
+        "is_trailer": false
+    },
+    {
+        "uuid": "707d834a-b8ce-11ed-80ce-02f42b336398",
+        "name": "АСМ",
+        "created_at": "2023-03-02 10:47:10",
+        "updated_at": "2023-03-02 10:47:10",
+        "component": "transport",
+        "is_trailer": false
+    },
+    {
+        "uuid": "76082f54-b8ce-11ed-972a-02f42b7b3697",
+        "name": "АЦ",
+        "created_at": "2023-03-02 10:47:20",
+        "updated_at": "2023-03-02 10:47:20",
+        "component": "transport",
+        "is_trailer": false
+    },
+    {
+        "uuid": "8658d3f4-b8ce-11ed-8894-02f42b7b3697",
+        "name": "Легковой автомобиль",
+        "created_at": "2023-03-02 10:47:47",
+        "updated_at": "2023-03-02 10:47:47",
+        "component": "transport",
+        "is_trailer": false
+    },
+    {
+        "uuid": "8ac94086-b8ce-11ed-8650-02f42b7b3697",
+        "name": "ПНС",
+        "created_at": "2023-03-02 10:47:54",
+        "updated_at": "2023-03-02 10:47:54",
+        "component": "transport",
+        "is_trailer": false
+    },
+    {
+        "uuid": "8d34700c-b8ce-11ed-af15-02f42b336398",
+        "name": "АР-2",
+        "created_at": "2023-03-02 10:47:59",
+        "updated_at": "2023-03-02 10:47:59",
+        "component": "transport",
+        "is_trailer": false
+    },
+    {
+        "uuid": "9358f3f4-b8ce-11ed-9052-02f42b7b3697",
+        "name": "АЛ",
+        "created_at": "2023-03-02 10:48:09",
+        "updated_at": "2023-03-02 10:48:09",
+        "component": "transport",
+        "is_trailer": false
+    },
+    {
+        "uuid": "96865850-b8ce-11ed-aac7-02f42b336398",
+        "name": "ГРУЗ",
+        "created_at": "2023-03-02 10:48:14",
+        "updated_at": "2023-03-02 10:48:14",
+        "component": "transport",
+        "is_trailer": false
+    },
+    {
+        "uuid": "15466fc4-b8fa-11ed-acd3-02f42b336398",
+        "name": "Снегоболотоход",
+        "created_at": "2023-03-02 15:59:35",
+        "updated_at": "2023-03-02 15:59:35",
+        "component": "transport",
+        "is_trailer": false
+    },
+    {
+        "uuid": "34ee5b54-bbf5-11ed-a8cc-02f42b336398",
+        "name": "Ассенизаторская машина",
+        "created_at": "2023-03-06 11:02:14",
+        "updated_at": "2023-03-06 11:02:14",
+        "component": "communal",
+        "is_trailer": false
+    },
+    {
+        "uuid": "bc27dd2e-bbf6-11ed-954f-02f42b336398",
+        "name": "Автокран",
+        "created_at": "2023-03-06 11:13:11",
+        "updated_at": "2023-03-06 11:13:11",
+        "component": "communal",
+        "is_trailer": false
+    },
+    {
+        "uuid": "952364c0-bca8-11ed-94b4-02f42b336398",
+        "name": "Металловоз",
+        "created_at": "2023-03-07 08:26:16",
+        "updated_at": "2023-03-07 08:26:16",
+        "component": "communal",
+        "is_trailer": false,
+        "category": "communal"
+    },
+    {
+        "uuid": "9ed88f68-bca8-11ed-9536-02f42b336398",
+        "name": "Кран-манипулятор",
+        "created_at": "2023-03-07 08:26:32",
+        "updated_at": "2023-03-07 08:26:32",
+        "component": "communal",
+        "is_trailer": false,
+        "category": "communal"
+    },
+    {
+        "uuid": "fe9f8820-bcb2-11ed-9ca4-02f42b7b3697",
+        "name": "УКМ",
+        "created_at": "2023-03-07 09:40:48",
+        "updated_at": "2023-03-07 09:40:48",
+        "component": "communal",
+        "is_trailer": false,
+        "category": "communal"
+    },
+    {
+        "uuid": "1f2923da-bcb3-11ed-8876-02f42b336398",
+        "name": "Эвакуатор с КМУ",
+        "created_at": "2023-03-07 09:41:42",
+        "updated_at": "2023-03-07 09:41:42",
+        "component": "communal",
+        "is_trailer": false,
+        "category": "communal"
+    },
+    {
+        "uuid": "2e667208-bcb3-11ed-a6ce-02f42b336398",
+        "name": "Бортовой с КМУ",
+        "created_at": "2023-03-07 09:42:08",
+        "updated_at": "2023-03-07 09:42:08",
+        "component": "communal",
+        "is_trailer": false,
+        "category": "communal"
+    },
+    {
+        "uuid": "3e06b448-bcb3-11ed-9b28-02f42b7b3697",
+        "name": "Газель бортовая",
+        "created_at": "2023-03-07 09:42:34",
+        "updated_at": "2023-03-07 09:42:34",
+        "component": "communal",
+        "is_trailer": false,
+        "category": "communal"
+    },
+    {
+        "uuid": "74a9722c-be59-11ed-8c07-02f42b7b3697",
+        "name": "Каналопромывочная",
+        "created_at": "2023-03-09 12:04:53",
+        "updated_at": "2023-03-09 12:04:53",
+        "component": "communal",
+        "is_trailer": false,
+        "category": "communal"
+    },
+    {
+        "uuid": "bab68b5a-be6e-11ed-a571-02f42b7b3697",
+        "name": "Автовышка",
+        "created_at": "2023-03-09 14:37:10",
+        "updated_at": "2023-03-09 14:37:10",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "05301732-be6f-11ed-b0d4-02f42b7b3697",
+        "name": "Бортовой грузовой",
+        "created_at": "2023-03-09 14:39:15",
+        "updated_at": "2023-03-09 14:39:15",
+        "component": "communal",
+        "is_trailer": false
+    },
+    {
+        "uuid": "e72d5362-bf04-11ed-b243-02f42b7b3697",
+        "name": "Пылесос",
+        "created_at": "2023-03-10 08:32:09",
+        "updated_at": "2023-03-10 08:32:09",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "4b238990-bf05-11ed-93c5-02f42b7b3697",
+        "name": "Мини-пылесос",
+        "created_at": "2023-03-10 08:34:57",
+        "updated_at": "2023-03-10 08:34:57",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "be5e6a5a-c16d-11ed-9ccf-02f42b7b3697",
+        "name": "Бортовая платформа",
+        "created_at": "2023-03-13 10:07:40",
+        "updated_at": "2023-03-13 10:07:40",
+        "component": "communal",
+        "is_trailer": false
+    },
+    {
+        "uuid": "656924b0-c174-11ed-b3c7-02f42b7b3697",
+        "name": "Ломовоз",
+        "created_at": "2023-03-13 10:55:18",
+        "updated_at": "2023-03-13 10:55:18",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "045c03e4-c17f-11ed-8b2c-02f42b7b3697",
+        "name": "Мини-трактор",
+        "created_at": "2023-03-13 12:11:19",
+        "updated_at": "2023-03-13 12:11:19",
+        "component": "garbage",
+        "is_trailer": false
+    },
+    {
+        "uuid": "20b212b8-c17f-11ed-8786-02f42b7b3697",
+        "name": "Мини-трактор",
+        "created_at": "2023-03-13 12:12:07",
+        "updated_at": "2023-03-13 12:12:07",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "bc590d44-c6ec-11ed-80c8-02f42b336398",
+        "name": "Асфальтоукладчик",
+        "created_at": "2023-03-20 09:59:19",
+        "updated_at": "2023-03-20 09:59:19",
+        "component": "communal",
+        "is_trailer": false,
+        "category": "communal"
+    },
+    {
+        "uuid": "deb61124-c6ed-11ed-b3cc-02f42b336398",
+        "name": "Каток вибрационный",
+        "created_at": "2023-03-20 10:07:26",
+        "updated_at": "2023-03-20 10:07:26",
+        "component": "communal",
+        "is_trailer": false,
+        "category": "communal"
+    },
+    {
+        "uuid": "76331a14-c6fe-11ed-be9f-02f42b336398",
+        "name": "Илосос ",
+        "created_at": "2023-03-20 12:06:12",
+        "updated_at": "2023-03-20 12:06:12",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "9662a0ec-c713-11ed-a92a-02f42b7b3697",
+        "name": "АДУ",
+        "created_at": "2023-03-20 14:37:25",
+        "updated_at": "2023-03-20 14:37:25",
+        "component": "road",
+        "is_trailer": false,
+        "category": "road"
+    },
+    {
+        "uuid": "1f9a309a-c715-11ed-8d31-02f42b7b3697",
+        "name": "Грузовой фургон",
+        "created_at": "2023-03-20 14:48:25",
+        "updated_at": "2023-03-20 14:48:25",
+        "component": "communal",
+        "is_trailer": false
+    },
+    {
+        "uuid": "980804fe-ce26-11ed-857f-02f42b6c1ed7",
+        "name": "Вакуумная коммунальная машина",
+        "created_at": "2023-03-29 14:41:07",
+        "updated_at": "2023-03-29 14:41:07",
+        "component": "communal",
+        "is_trailer": false
+    },
+    {
+        "uuid": "15973376-d2c9-11ed-88f3-02f42b336398",
+        "name": "Грузовой фургон",
+        "created_at": "2023-04-04 12:14:21",
+        "updated_at": "2023-04-04 12:14:21",
+        "component": "transport",
+        "is_trailer": false
+    },
+    {
+        "uuid": "968775bc-33df-11eb-b990-02f42b3394c3",
+        "name": "мини-пылесос",
+        "created_at": "2020-12-01 17:14:56",
+        "updated_at": "2023-04-05 15:16:37",
+        "component": "communal",
+        "is_trailer": false,
+        "category": "communal"
+    },
+    {
+        "uuid": "d6ace302-f3f8-11e9-8baa-02f42be5cd69",
+        "name": "Автобус",
+        "created_at": "2019-10-21 14:49:29",
+        "updated_at": "2023-04-20 09:55:06",
+        "component": "communal",
+        "is_trailer": false,
+        "icon": "bus",
+        "category": "communal"
+    },
+    {
+        "uuid": "306c839a-0203-11e9-bf99-02f42b30fdb0",
+        "name": "Автовышка",
+        "created_at": "2018-12-17 16:53:53",
+        "updated_at": "2023-04-20 09:55:32",
+        "component": "communal",
+        "is_trailer": false,
+        "icon": "loader",
+        "category": "communal"
+    },
+    {
+        "uuid": "163fdcaa-df59-11ed-aa44-02f42b336398",
+        "name": "ГДЗС",
+        "created_at": "2023-04-20 11:55:23",
+        "updated_at": "2023-04-20 11:55:23",
+        "component": "transport",
+        "is_trailer": false
+    },
+    {
+        "uuid": "a8b49e6e-e4d0-11ed-82d1-02f42b6c1ed7",
+        "name": "Пожарная автолестница",
+        "created_at": "2023-04-27 10:53:55",
+        "updated_at": "2023-04-27 10:53:55",
+        "component": "transport",
+        "is_trailer": false
+    },
+    {
+        "uuid": "7bf7bd8a-b8ce-11ed-a661-02f42b7b3697",
+        "name": "АЦ (ВДПД)",
+        "created_at": "2023-03-02 10:47:30",
+        "updated_at": "2023-04-27 11:06:07",
+        "component": "transport",
+        "is_trailer": false
+    },
+    {
+        "uuid": "8c96c292-e4f9-11ed-bb84-02f42b336398",
+        "name": "Автобус",
+        "created_at": "2023-04-27 15:46:37",
+        "updated_at": "2023-04-27 15:46:37",
+        "component": "transport",
+        "is_trailer": false
+    },
+    {
+        "uuid": "ad5a66e6-e4f9-11ed-bb50-02f42b6c1ed7",
+        "name": "Микроавтобус",
+        "created_at": "2023-04-27 15:47:32",
+        "updated_at": "2023-04-27 15:47:32",
+        "component": "transport",
+        "is_trailer": false
+    },
+    {
+        "uuid": "427859a4-e4fa-11ed-83e9-02f42b336398",
+        "name": "Автомобильный кран",
+        "created_at": "2023-04-27 15:51:42",
+        "updated_at": "2023-04-27 15:51:42",
+        "component": "transport",
+        "is_trailer": false
+    },
+    {
+        "uuid": "6bca1526-e4fb-11ed-bd09-02f42b336398",
+        "name": "Погрузчик",
+        "created_at": "2023-04-27 16:00:01",
+        "updated_at": "2023-04-27 16:00:01",
+        "component": "transport",
+        "is_trailer": false
+    },
+    {
+        "uuid": "4d9e72be-ea7c-11ed-ab8e-02f42bbae61b",
+        "name": "СПЕЦИАЛЬНОЕ",
+        "created_at": "2023-05-04 16:05:11",
+        "updated_at": "2023-05-04 16:07:17",
+        "component": "communal",
+        "is_trailer": false,
+        "category": "communal"
+    },
+    {
+        "uuid": "f9e73186-eb0e-11ed-b065-02f42bc901fd",
+        "name": "погрузочно-уборочная",
+        "created_at": "2023-05-05 09:35:07",
+        "updated_at": "2023-05-05 09:35:07",
+        "component": "communal",
+        "is_trailer": false,
+        "category": "communal"
+    },
+    {
+        "uuid": "728c53f0-6111-11ee-b2f1-02f42b381934",
+        "name": "Трактор",
+        "created_at": "2023-10-02 13:50:05",
+        "updated_at": "2023-10-02 13:50:05",
+        "component": "garbage",
+        "is_trailer": false
+    },
+    {
+        "uuid": "b2ea3f1e-f007-11ed-9ecb-02f42bbae61b",
+        "name": "Разбрасыватель песка тракторный",
+        "created_at": "2023-05-11 17:25:37",
+        "updated_at": "2023-05-11 17:25:37",
+        "component": "communal",
+        "is_trailer": false
+    },
+    {
+        "uuid": "282f944a-0e6c-11ee-a131-02f42b688a38",
+        "name": "Специализированный прочее",
+        "created_at": "2023-06-19 09:40:18",
+        "updated_at": "2023-06-19 09:40:18",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "e9a58b82-0e73-11ee-af87-02f42b688a38",
+        "name": "Грузовой бортовой",
+        "created_at": "2023-06-19 10:35:49",
+        "updated_at": "2023-06-19 10:35:49",
+        "component": "road",
+        "is_trailer": false
+    },
+    {
+        "uuid": "fa451ed8-3526-11ee-8dbf-02f42bc901fd",
+        "name": "Специальный эвакуатор",
+        "created_at": "2023-08-07 16:33:21",
+        "updated_at": "2023-08-07 16:33:21",
+        "component": "transport",
+        "is_trailer": false
+    },
+    {
+        "uuid": "6ec128c6-4588-11ee-b433-02f42b381934",
+        "name": "Специализированный прочее",
+        "created_at": "2023-08-28 12:51:17",
+        "updated_at": "2023-08-28 12:51:17",
+        "component": "communal",
+        "is_trailer": false
+    },
+    {
+        "uuid": "63adbfae-8781-11ee-ba31-02f42b9b4289",
+        "name": "Автомобиль штабной",
+        "created_at": "2023-11-20 11:47:08",
+        "updated_at": "2023-11-20 11:47:08",
+        "component": "transport",
+        "is_trailer": false
+    },
+    {
+        "uuid": "4001ef0a-aed0-11ee-820a-02f42b9b4289",
+        "name": "Седельный тягач",
+        "created_at": "2024-01-09 12:19:54",
+        "updated_at": "2024-01-09 12:19:54",
+        "component": "communal",
+        "is_trailer": false
+    },
+    {
+        "uuid": "743f4388-e04b-11ee-a8a1-02f42b362d3d",
+        "name": "Снегоход",
+        "created_at": "2024-03-12 11:35:17",
+        "updated_at": "2024-03-12 11:35:17",
+        "component": "transport",
+        "is_trailer": false
+    },
+    {
+        "uuid": "0ec67a2a-e696-11ee-9c2a-02f42b797ca9",
+        "name": "АРС",
+        "created_at": "2024-03-20 11:44:26",
+        "updated_at": "2024-03-20 11:44:26",
+        "component": "transport",
+        "is_trailer": false
+    },
+    {
+        "uuid": "a202b6fa-3781-11ef-87d0-02f42b3e2b33",
+        "name": "Универсальная коммунальная машина",
+        "created_at": "2024-07-01 11:12:18",
+        "updated_at": "2024-07-01 11:12:18",
+        "component": "communal",
+        "is_trailer": false
+    }
+]

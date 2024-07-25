@@ -58,9 +58,9 @@ class RouteNetworkDialog(QtWidgets.QDialog, FORM_CLASS):
 
         # Variables.
         self.path = ''
-        self.date = ''
+        self.date_from = ''
+        self.date_to = ''
         self.reg = ''
-        self.flag = False
         self.df = None
         
         # Check boxes.
@@ -72,19 +72,30 @@ class RouteNetworkDialog(QtWidgets.QDialog, FORM_CLASS):
         self.time_box.addItem("весь день", 1)
         self.time_box.addItem("час пик", 2)
         self.time_box.addItem("вечерчние часы пик", 3)
+        self.time_box.hide()
 
         self.check_box.stateChanged.connect(self.handleCheckBoxStateChanged)
+        self.check_box_period.stateChanged.connect(self.periodCheckBoxStateChanged)
+
+        self.check_box_period.hide()
+        self.period_label.hide()
+        self.label_date_from.hide()
+        self.label_date_to.hide()
+        self.date_from_edit.hide()
+        self.date_to_edit.hide()
+        self.excel_export_info_button.hide()
+        self.table_widget_info.hide()
+        self.table_widget.hide() 
 
         # Buttons.
         self.button_prc.clicked.connect(self.button_percentage_clicked)
         self.button_dwnl.clicked.connect(self.button_download_clicked)
-        self.browse_button.clicked.connect(self.show_file_dialog)
         self.button_prc_group.clicked.connect(self.button_percentage_group_clicked)
         self.button_find.clicked.connect(self.button_find_clicked)
         self.button_layer.clicked.connect(self.button_layer_clicked)
         self.save_button.clicked.connect(self.save_button_clicked)
         self.save_button.setVisible(False)
-        self.expand_button.clicked.connect(self.expand_button_clicked)
+        self.excel_export_info_button.clicked.connect(self.save_button_clicked)
         self.stop_point_button.clicked.connect(self.stop_point_button_clicked)
         self.intersection_button.clicked.connect(self.button_intersection_clicked)
         self.jk_layer_button.clicked.connect(self.jk_layer_button_clicked)
@@ -92,7 +103,8 @@ class RouteNetworkDialog(QtWidgets.QDialog, FORM_CLASS):
         self.population_layer_button.clicked.connect(self.population_layer_button_clicked)
 
         # Date.
-        self.date_edit.setDate(QDate.currentDate())
+        self.date_from_edit.setDate(QDate.currentDate())
+        self.date_to_edit.setDate(QDate.currentDate())
 
         # Table Widgets.
         self.table_widget.cellClicked.connect(self.cell_clicked)
@@ -155,13 +167,13 @@ class RouteNetworkDialog(QtWidgets.QDialog, FORM_CLASS):
     def get_active_layers_in_group(self, group):
         active_layers = []
         for layer_tree_node in group.children():
-            if isinstance(layer_tree_node, QgsLayerTreeLayer) and layer_tree_node.isVisible():
+            if layer_tree_node.isVisible():
                 layer = layer_tree_node.layer()
                 if isinstance(layer, QgsVectorLayer):
                     if layer.featureCount() > 0:
                         coordinates = self.get_coordinates_by_peregons(layer)
                         if len(coordinates) != 0:
-                            if 'reverse' in layer.name():
+                            if 'обратное' in layer.name():
                                 coordinates = list(reversed(coordinates))
 
                             active_layers.append({
@@ -179,6 +191,7 @@ class RouteNetworkDialog(QtWidgets.QDialog, FORM_CLASS):
                 active_layers = self.get_active_layers_in_group(child)
                 if len(active_layers) != 0:
                     group_layers_dict.append({'group_name': child.name(), 'layers': active_layers})
+        # print(group_layers_dict)
         if len(group_layers_dict) != 2:
             return None
         
@@ -205,34 +218,13 @@ class RouteNetworkDialog(QtWidgets.QDialog, FORM_CLASS):
         return 0
 
 
-    def add_peregons_to_project(self, matching_peregons):
-        line_layer = QgsVectorLayer('LineString?crs=epsg:4326', "MathPeregons", 'memory')
-        provider = line_layer.dataProvider()
-
-        fields = QgsFields()
-        fields.append(QgsField('ID', QVariant.Int))
-
-        line_layer.startEditing()
-
-        line_geometry = QgsGeometry.fromPolylineXY(mathcing_peregons)
-
-        feature = QgsFeature()
-        feature.setGeometry(line_geometry)
-        feature.setAttributes([1])
-
-        provider.addFeature(feature)
-
-        line_layer.commitChanges()
-        QgsProject.instance().addMapLayer(line_layer)
-
-
     def show_table(self, height, width, layer_coordinates_by_peregons):
         column_headers = []
         row_headers = []
         values = []
-        self.progress.setMaximum(len(layer_coordinates_by_peregons))
+        self.analysis_progress.setMaximum(len(layer_coordinates_by_peregons))
         index = 0
-        self.status_label.setText('Расчет вариантов...')
+        self.analysis_status_label.setText('Расчет вариантов...')
         for item in layer_coordinates_by_peregons:
             index += 1
             name_1 = item['name']
@@ -252,9 +244,10 @@ class RouteNetworkDialog(QtWidgets.QDialog, FORM_CLASS):
             if len(row_headers) < height:
                 row_headers.append(name_1)
             time.sleep(0.1)
-            self.progress.setValue(index)
+            self.analysis_progress.setValue(index)
             QApplication.processEvents()
-
+            
+        self.table_widget.show()
         self.table_widget.setRowCount(height)
         self.table_widget.setColumnCount(width)
         self.table_widget.setHorizontalHeaderLabels(column_headers)
@@ -277,7 +270,7 @@ class RouteNetworkDialog(QtWidgets.QDialog, FORM_CLASS):
                 if percent == 0.0:
                     item = QTableWidgetItem()
                 self.table_widget.setItem(row, col, item)
-        self.status_label.setText('Готов к работе')
+        self.analysis_status_label.setText('Готов к работе')
 
         dataset = {
             'Вариант_1': [],
@@ -319,9 +312,12 @@ class RouteNetworkDialog(QtWidgets.QDialog, FORM_CLASS):
         column_headers = []
         row_headers = []
         values = []
-        self.progress.setMaximum(len(group_layers))
         index = 0
-        self.status_label.setText('Расчет вариантов...')
+
+        self.analysis_progress.setValue(0)
+        self.analysis_progress.setMaximum(len(group_layers))
+        self.analysis_status_label.setText('Расчет вариантов...')
+        
         for layer in group_1['layers']:
             layer_name_1 = layer['name']
             layer_coordinates_1 = layer['coordinates']
@@ -342,9 +338,10 @@ class RouteNetworkDialog(QtWidgets.QDialog, FORM_CLASS):
                 row_headers.append(layer_name_1)
                 
             time.sleep(0.1)
-            self.progress.setValue(index)
+            self.analysis_progress.setValue(index)
             QApplication.processEvents()
-
+            
+        self.table_widget.show()
         self.table_widget.setRowCount(height)
         self.table_widget.setColumnCount(width)
         self.table_widget.setHorizontalHeaderLabels(column_headers)
@@ -364,7 +361,7 @@ class RouteNetworkDialog(QtWidgets.QDialog, FORM_CLASS):
                 if percent == 0.0:
                     item = QTableWidgetItem()
                 self.table_widget.setItem(row, col, item)
-        self.status_label.setText('Готов к работе')
+        self.analysis_status_label.setText('Подготавливаю данные')
 
         dataset = {
             'Вариант_1': [],
@@ -372,7 +369,7 @@ class RouteNetworkDialog(QtWidgets.QDialog, FORM_CLASS):
             'Дублированность': [],
             'Совпадение_перегонов': []
             }
-
+        
         for row in range(self.table_widget.rowCount()):
             row_data = []
             row_data.append(row_headers[row])
@@ -381,7 +378,8 @@ class RouteNetworkDialog(QtWidgets.QDialog, FORM_CLASS):
                 if item is not None:
                     row_data.append(item.text())
                     if item.text() != '':
-                        row_text = self.table_widget.horizontalHeaderItem(row).text()
+                        row_obj = self.table_widget.horizontalHeaderItem(row)
+                        row_text = '' if row_obj is None else row_obj.text()
                         column_text = self.table_widget.verticalHeaderItem(column).text()
                         dubl = item.text().split(' ')[2] + ' %'
                         count_peregons = item.text().split(' ')[4].replace('(', '').replace(')', '').split(' ')[0]
@@ -392,7 +390,7 @@ class RouteNetworkDialog(QtWidgets.QDialog, FORM_CLASS):
                         dataset['Совпадение_перегонов'].append(count_peregons)
                 else:
                     row_data.append('')
-            
+        self.analysis_status_label.setText('Готов к работе')
         col_data = ['#']
         col_data.extend(column_headers)
 
@@ -428,7 +426,7 @@ class RouteNetworkDialog(QtWidgets.QDialog, FORM_CLASS):
     
 
     def button_percentage_clicked(self):
-        self.status_label.setText('Подготавливаем варианты')
+        self.analysis_status_label.setText('Подготавливаем варианты...')
         active_coordinates = self.get_active_layers()
         height = len(active_coordinates)
         width = len(active_coordinates)
@@ -437,7 +435,7 @@ class RouteNetworkDialog(QtWidgets.QDialog, FORM_CLASS):
         
 
     def button_percentage_group_clicked(self):
-        self.status_label.setText('Подготавливаем варианты')
+        self.analysis_status_label.setText('Подготавливаем варианты...')
         goup_layer_coordinates = self.get_visible_group_layers()
         if goup_layer_coordinates is not None:
             height = len(goup_layer_coordinates[0]['layers'])
@@ -445,24 +443,25 @@ class RouteNetworkDialog(QtWidgets.QDialog, FORM_CLASS):
             self.df = self.show_table_for_group(width, height, goup_layer_coordinates)
             self.save_button.setVisible(True)
         else:
-            self.status_label.setText('<span style="color: rgb(250, 55, 55);">Выберите две группы слоев!</span>')
-            return
+            self.analysis_status_label.setText('<span style="color: rgb(250, 55, 55);">Выберите две группы слоев!</span>')
 
 
     def button_find_clicked(self):
-        reg = str(self.reg_edit.text())
-        if reg != "":
+        reg = str(self.lineEdit.text()).replace(' ', '')
+        if reg != "" and reg.isdigit():
             filtered_layers = [layer for layer in QgsProject.instance().mapLayers().values()
                     if reg == layer.name().split('-')[len(layer.name().split('-')) - 2]]
 
             self.set_active_layers([layer.name() for layer in filtered_layers])
-            self.reg_edit.setText('')
+            self.lineEdit.setText('')
         else:
-            self.status_label.setText('<span style="color: rgb(250, 55, 55);">Поле не может быть пустым!</span>')
+            self.status_general_label.setText('<span style="color: rgb(250, 55, 55);">Поле не может быть пустым!</span>')
         return
   
 
     def button_download_clicked(self):
+        self.progress.setValue(0)
+        self.status_general_label.setText('Готов к работе')
         selected_item = self.time_box.currentText()
         company = self.company_box.currentText()
     
@@ -473,28 +472,32 @@ class RouteNetworkDialog(QtWidgets.QDialog, FORM_CLASS):
         else:
             time = '03-24'
             
-        selected_date = self.date_edit.dateTime().date()
-        self.date = selected_date.toString("yyyy-MM-dd")
-        
-        if company is None:
-            self.status_label.setText('<span style="color: rgb(250, 55, 55);">Выберите перевозчика!</span>')
+        selected_date_from = self.date_from_edit.dateTime().date()
+        selected_date_to = self.date_to_edit.dateTime().date()
+
+        self.date_from = selected_date_from.toString("yyyy-MM-dd")
+        self.date_to = selected_date_to.toString('yyyy-MM-dd') if self.check_box_period.isChecked() else None
+
+        self.period = [self.date_from + 'T00:00:00+03:00', self.date_to + 'T00:00:00+03:00' if self.date_to is not None else self.date_from + 'T00:00:00+03:00']
+
+        if company == 'Выберите перевозчика...':
+            self.status_general_label.setText('<span style="color: rgb(250, 55, 55);">Выберите перевозчика!</span>')
             return
 
-        if self.path == '':
-            self.status_label.setText('<span style="color: rgb(250, 55, 55);">Не введен путь к маршрутам!</span>')
+        array_regs = self.get_array_regs()
+        if array_regs == None or len(array_regs) < 1:
+            self.status_general_label.setText('<span style="color: rgb(250, 55, 55);">Введите рег. номера!</span>')
             return
 
-        if selected_item is None:
-            self.status_label.setText('<span style="color: rgb(250, 55, 55);">Выберите время!</span>')
-            return
-
-        self.status_label.setText('Получаем варианты из РНИС...')
-        self.network = AsyncNetworkVariants(self, self.path, self.date, time, company, self.flag)
+        self.status_general_label.setText('Получаем варианты из РНИС...')
+        self.network = AsyncNetworkVariants(self, array_regs, time, company, self.check_box.isChecked(), date_from=self.date_from, date_to=self.date_to, period=self.period)
         asyncio.run(self.network.progress_bar())
         self.progress.setValue(100)
         
 
     def button_layer_clicked(self):
+        self.progress.setValue(0)
+        self.status_general_label.setText('Готов к работе')
         selected_item = self.time_box.currentText()
         company = self.company_box.currentText()
     
@@ -504,22 +507,32 @@ class RouteNetworkDialog(QtWidgets.QDialog, FORM_CLASS):
             time = '17-21'
         else:
             time = '03-24'
-            
-        selected_date = self.date_edit.dateTime().date()
-        self.date = selected_date.toString("yyyy-MM-dd")
         
-        if company is None:
-            self.status_label.setText('<span style="color: rgb(250, 55, 55);">Выберите перевозчика!</span>')
+        selected_date_from = self.date_from_edit.dateTime().date()
+        selected_date_to = self.date_to_edit.dateTime().date()
+
+        self.date_from = selected_date_from.toString("yyyy-MM-dd")
+        self.date_to = selected_date_to.toString('yyyy-MM-dd') if self.check_box_period.isChecked() else None
+
+        self.period = [self.date_from + 'T00:00:00+03:00', self.date_to + 'T00:00:00+03:00' if self.date_to is not None else self.date_from + 'T00:00:00+03:00']
+        
+        if company == 'Выберите перевозчика...':
+            self.status_general_label.setText('<span style="color: rgb(250, 55, 55);">Выберите перевозчика!</span>')
             return
 
-        if self.path == '':
-            self.status_label.setText('<span style="color: rgb(250, 55, 55);">Не введен путь к маршрутам!</span>')
+        array_regs = self.get_array_regs()
+        if array_regs == None or len(array_regs) < 1:
+            self.status_general_label.setText('<span style="color: rgb(250, 55, 55);">Введите рег. номера!</span>')
             return
-            
-        self.status_label.setText('Получаем варианты из РНИС...')
-        self.network = AsyncNetworkVariants(self, self.path, self.date, time, company, self.flag)
+
+        self.status_general_label.setText('Получаем варианты из РНИС...')
+        self.network = AsyncNetworkVariants(self, array_regs, time, company, self.check_box.isChecked(), date_from=self.date_from, date_to=self.date_to, period=self.period)
         asyncio.run(self.network.progress_bar(type=2))
         self.progress.setValue(100)
+
+
+    def get_array_regs(self):
+        return[int(item) for item in str(self.reg_text_edit.toPlainText()).split(',') if item.replace(' ', '').isdigit()]
 
 
     def cell_clicked(self, row, column):
@@ -532,20 +545,34 @@ class RouteNetworkDialog(QtWidgets.QDialog, FORM_CLASS):
         self.set_active_layers(filtered_layers)
 
 
-    def show_file_dialog(self):
-        file_dialog = QFileDialog()
-        file_path, _ = file_dialog.getOpenFileName(self, 'Выберите файл')
-
-        if file_path:
-            self.path_edit.setText(file_path)
-            self.path = file_path
-
-
     def handleCheckBoxStateChanged(self, state):
         if state == Qt.Checked:
-            self.flag = True
+            self.time_box.show()
+            self.period_label.show()
+            self.check_box_period.show()
+            self.label_date_from.show()
+            self.label_date_to.hide()
+            self.date_from_edit.show()
+            self.date_to_edit.hide()
         else:
-            self.flag = False
+            if self.check_box_period.isChecked():
+                self.check_box_period.setChecked(False)
+            self.check_box_period.hide()
+            self.period_label.hide()
+            self.label_date_from.hide()
+            self.label_date_to.hide()
+            self.date_from_edit.hide()
+            self.date_to_edit.hide()
+            self.time_box.hide()
+
+
+    def periodCheckBoxStateChanged(self, state):
+        if state == Qt.Checked:
+            self.label_date_to.show()
+            self.date_to_edit.show()
+        else:
+            self.label_date_to.hide()
+            self.date_to_edit.hide()
 
 
     def save_button_clicked(self):
@@ -558,17 +585,12 @@ class RouteNetworkDialog(QtWidgets.QDialog, FORM_CLASS):
                 self.df.to_excel(file_name + '.xlsx', index=False)
 
         else:
-            self.status_label.setText('<span style="color: rgb(250, 55, 55);">Данные не могут быть пустыми!</span>')
-
-
-    def expand_button_clicked(self):
-        screen = QDesktopWidget().screenGeometry()
-        width, height = screen.width(), screen.height()
-
-        self.resize(width, height)
+            self.status_general_label.setText('<span style="color: rgb(250, 55, 55);">Данные не могут быть пустыми!</span>')
 
 
     def stop_point_button_clicked(self):
+        self.progress.setValue(0)
+        self.status_general_label.setText('Готов к работе')
         selected_item = self.time_box.currentText()
         company = self.company_box.currentText()
     
@@ -579,19 +601,28 @@ class RouteNetworkDialog(QtWidgets.QDialog, FORM_CLASS):
         else:
             time = '03-24'
             
-        selected_date = self.date_edit.dateTime().date()
-        self.date = selected_date.toString("yyyy-MM-dd")
+        selected_date_from = self.date_from_edit.dateTime().date()
+        selected_date_to = self.date_to_edit.dateTime().date()
+
+        self.date_from = selected_date_from.toString("yyyy-MM-dd")
+        self.date_to = selected_date_to.toString('yyyy-MM-dd') if self.check_box_period.isChecked() else None
+        self.period = [self.date_from + 'T00:00:00+03:00', self.date_to + 'T00:00:00+03:00' if self.date_to is not None else self.date_from + 'T00:00:00+03:00']
         
-        if company is None:
-            self.status_label.setText('<span style="color: rgb(250, 55, 55);">Выберите перевозчика!</span>')
+        if not self.check_box.isChecked():
+            self.status_general_label.setText('<span style="color: rgb(250, 55, 55);">Выберите дату!</span>')
+            return
+        
+        if company == 'Выберите перевозчика...':
+            self.status_general_label.setText('<span style="color: rgb(250, 55, 55);">Выберите перевозчика!</span>')
             return
 
-        if self.path == '':
-            self.status_label.setText('<span style="color: rgb(250, 55, 55);">Не введен путь к маршрутам!</span>')
+        array_regs = self.get_array_regs()
+        if array_regs == None or len(array_regs) < 1:
+            self.status_general_label.setText('<span style="color: rgb(250, 55, 55);">Введите рег. номера!</span>')
             return
             
-        self.status_label.setText('Получаем варианты из РНИС...')
-        self.network = AsyncNetworkVariants(self, self.path, self.date, time, company, self.flag)
+        self.status_general_label.setText('Получаем варианты из РНИС...')
+        self.network = AsyncNetworkVariants(self, array_regs, time, company, self.check_box.isChecked(), date_from=self.date_from, date_to=self.date_to, period=self.period)
         asyncio.run(self.network.progress_bar(type=3))
         self.progress.setValue(100)
 
@@ -621,6 +652,8 @@ class RouteNetworkDialog(QtWidgets.QDialog, FORM_CLASS):
         route_numbers = [ids['1route_peregon_num'], ids['2route_peregon_num']]
         zagr = 0
         passp = 0
+        total_soc = 0
+        total_kom = 0
 
         for index, layer in enumerate(layers):
             layer_name = layer.name()
@@ -629,10 +662,12 @@ class RouteNetworkDialog(QtWidgets.QDialog, FORM_CLASS):
             if len(vectors) == 1:
                 features = list(vectors[0].getFeatures())[route_numbers[index]].attributes()
                 if features[1] != 'None' and features[6] != 'None':
-                    zagr += int(features[1])
-                    passp += int(features[6])
+                    passp += int(features[11])
+                    total_soc += int(features[13])
+                    total_kom += int(features[14])
         return {
-            'sum_zagr': zagr,
+            'sum_soc': total_soc,
+            'sum_kom': total_kom,
             'sum_passp': passp,
             'num1': route_numbers[0],
             'num2': route_numbers[1],
@@ -651,14 +686,7 @@ class RouteNetworkDialog(QtWidgets.QDialog, FORM_CLASS):
     def get_default_feature(self):
         return {
             'type': 'Feature',
-            'properties': {
-                'Перегон первого маршрута': None,
-                'Перегон второго маршрута': None,
-                'Первый маршрут': None,
-                'Второй маршрут': None,
-                'Суммарная загруженность': None,
-                'Суммарный пасажиропоток': None
-            },
+            'properties': {},
             'geometry': {
                 'type': 'LineString',
                 'coordinates': None
@@ -684,12 +712,13 @@ class RouteNetworkDialog(QtWidgets.QDialog, FORM_CLASS):
                     line_points[index + 1].y()
                 ])
             feature = self.get_default_feature()
-            feature['properties']['Перегон первого маршрута'] = data['peregon1']
-            feature['properties']['Перегон второго маршрута'] = data['peregon2']
+            feature['properties']['Перегон первого маршрута'] = str(data['peregon1'])
+            feature['properties']['Перегон второго маршрута'] = str(data['peregon2'])
             feature['properties']['Первый маршрут'] = layers[0].name()
             feature['properties']['Второй маршрут'] = layers[1].name()
-            feature['properties']['Суммарная загруженность'] = data['sum_zagr']
-            feature['properties']['Суммарный пасажиропоток'] = data['sum_passp']
+            feature['properties']['Суммарный пасажиропоток'] = str(data['sum_passp'])
+            feature['properties']['Сумма СОЦ'] = str(data['sum_soc'])
+            feature['properties']['Сумма КОМ'] = str(data['sum_kom'])
             feature['geometry']['coordinates'] = coordinates
             default_geojson['features'].append(feature)
 
@@ -726,8 +755,7 @@ class RouteNetworkDialog(QtWidgets.QDialog, FORM_CLASS):
                                 points.extend(feature.geometry().asPolyline())
 
                         if len(points) != 0:
-                            coordinates_by_layers.append({"layer_name": layer.name(), "geometry": points})
-        
+                            coordinates_by_layers.append({"layer_name": layer.name(), "geometry": points})     
 
         layer1 = layers[0]
         layer2 = layers[1]
@@ -795,7 +823,8 @@ class RouteNetworkDialog(QtWidgets.QDialog, FORM_CLASS):
                 attibutes_info = self.get_data_layer_by_id(route_peregons, layers)
                 data = {
                     'point': point,
-                    'sum_zagr': attibutes_info['sum_zagr'],
+                    'sum_soc': attibutes_info['sum_soc'],
+                    'sum_kom': attibutes_info['sum_kom'],
                     'sum_passp': attibutes_info['sum_passp'],
                     'peregon1': attibutes_info['num1'],
                     'peregon2': attibutes_info['num2'],
@@ -805,48 +834,96 @@ class RouteNetworkDialog(QtWidgets.QDialog, FORM_CLASS):
         geojson = self.create_geo_json(line_points, feature_data, layers)
         geojson_obj = json.dumps(geojson)
         new_layer_line = QgsVectorLayer(geojson_obj + "|geometrytype=LineString", 'Пересечение', "ogr")
+        group_name = 'Пересечения маршрутов'
+
+        root = QgsProject.instance().layerTreeRoot()
+        group = next(
+            (child for child in root.children() if isinstance(child, QgsLayerTreeGroup) and child.name() == group_name),
+            None)
         
-        QgsProject.instance().addMapLayer(new_layer_line)
-    
+        if group is None:
+            group = root.addGroup(group_name)
+
+        QgsProject.instance().addMapLayer(new_layer_line, False)
+        group.insertChildNode(0, QgsLayerTreeLayer(new_layer_line))
+
 
     def jk_layer_button_clicked(self):
-        json_file = 'C:\\Users\\DoroninIA\\Desktop\\QGIS\\QGIS-Plugin-MTDI-master\\route_network\\jsonData\\JK.geojson'
-        qml_file = 'C:\\Users\\DoroninIA\\Desktop\\QGIS\\QGIS-Plugin-MTDI-master\\route_network\\jsonData\\jk.qml'
+        base_path = os.path.dirname(os.path.abspath(__file__))
+
+        dataset_path = os.path.join(base_path, 'jsonData')
+
+        data_files = [
+            os.path.join(dataset_path, 'JK.geojson'),
+            os.path.join(dataset_path, 'jk.qml')
+        ]
+
+        json_file = data_files[0]
+        qml_file = data_files[1]
         group_name = 'Слой ЖК'
 
         self.insert_file_layer_to_map(json_file, qml_file, group_name, 'ЖК')
         
 
     def jd_layer_button_clicked(self):
+        base_path = os.path.dirname(os.path.abspath(__file__))
+
+        dataset_path = os.path.join(base_path, 'jsonData')
+
+        data_files_path = [
+            os.path.join(dataset_path, 'd1.geojson'),
+            os.path.join(dataset_path, 'd1.qml'),
+            os.path.join(dataset_path, 'd2.geojson'),
+            os.path.join(dataset_path, 'd2.qml'),
+            os.path.join(dataset_path, 'd3.geojson'),
+            os.path.join(dataset_path, 'd3.qml'),
+            os.path.join(dataset_path, 'd4.geojson'),
+            os.path.join(dataset_path, 'd4.qml'),
+        ]
+    
         files = [
-            ('C:\\Users\\DoroninIA\\Desktop\\QGIS\\QGIS-Plugin-MTDI-master\\route_network\\jsonData\\d1.geojson',
-             'C:\\Users\\DoroninIA\\Desktop\\QGIS\\QGIS-Plugin-MTDI-master\\route_network\\jsonData\\d1.qml'),
+            (data_files_path[0], data_files_path[1]),
 
-            ('C:\\Users\\DoroninIA\\Desktop\\QGIS\\QGIS-Plugin-MTDI-master\\route_network\\jsonData\\d2.geojson',
-             'C:\\Users\\DoroninIA\\Desktop\\QGIS\\QGIS-Plugin-MTDI-master\\route_network\\jsonData\\d2.qml'),
+            (data_files_path[2], data_files_path[3]),
 
-            ('C:\\Users\\DoroninIA\\Desktop\\QGIS\\QGIS-Plugin-MTDI-master\\route_network\\jsonData\\d3.geojson',
-             'C:\\Users\\DoroninIA\\Desktop\\QGIS\\QGIS-Plugin-MTDI-master\\route_network\\jsonData\\d3.qml'),
+            (data_files_path[4], data_files_path[5]),
 
-            ('C:\\Users\\DoroninIA\\Desktop\\QGIS\\QGIS-Plugin-MTDI-master\\route_network\\jsonData\\d4.geojson',
-             'C:\\Users\\DoroninIA\\Desktop\\QGIS\\QGIS-Plugin-MTDI-master\\route_network\\jsonData\\d4.qml')
+            (data_files_path[6], data_files_path[7])
+        ]
+
+        dataset_path = os.path.join(base_path, 'jsonData', 'stopsData')
+        stop_point_files = [
+            os.path.join(dataset_path, 'MCD1-stops.geojson'),
+            os.path.join(dataset_path, 'MCD2-stops.geojson'),
+            os.path.join(dataset_path, 'MCD3-stops.geojson'),
+            os.path.join(dataset_path, 'MCD4-stops.geojson')
+        ]
+
+        dataset_path = os.path.join(base_path, 'jsonData', 'datasets')
+        data_files = [
+            os.path.join(dataset_path, 'MCD1.json'),
+            os.path.join(dataset_path, 'MCD2.json'),
+            os.path.join(dataset_path, 'MCD3.json'),
+            os.path.join(dataset_path, 'MCD4.json')
         ]
         
         group_name = 'Cлой ЖД'
         index = 1
         for file, style in files:
-            self.insert_file_layer_to_map(file, style, group_name, f'Д-{index}')
+            self.insert_file_layer_to_map(file, style, group_name, f'Д-{index}', data_files[index - 1], stop_point_file_name=stop_point_files[index - 1])
             index += 1
 
 
     def population_layer_button_clicked(self):
-        json_file = 'C:\\Users\\DoroninIA\\Desktop\\QGIS\\QGIS-Plugin-MTDI-master\\route_network\\jsonData\\population.json'
-        qml_file = 'C:\\Users\\DoroninIA\\Desktop\\QGIS\\QGIS-Plugin-MTDI-master\\route_network\\jsonData\\population.qml'
+        base_path = os.path.dirname(os.path.abspath(__file__))
+        dataset_path = os.path.join(base_path, 'jsonData')
+        json_file = os.path.join(dataset_path, 'population.json')
+        qml_file = os.path.join(dataset_path, 'population.qml')
         group_name = 'Слой плотности населения'
         self.insert_file_layer_to_map(json_file, qml_file, group_name, 'Плотность населения')
 
 
-    def insert_file_layer_to_map(self, json_file, qml_file, group_name, layer_name):
+    def insert_file_layer_to_map(self, json_file, qml_file, group_name, layer_name, dataset_file_name=None, stop_point_file_name=None):
         layer = QgsVectorLayer(json_file, layer_name, 'ogr')
         layer.loadNamedStyle(qml_file)
    
@@ -861,3 +938,66 @@ class RouteNetworkDialog(QtWidgets.QDialog, FORM_CLASS):
         QgsProject.instance().addMapLayer(layer, False)
         group.insertChildNode(0, QgsLayerTreeLayer(layer))
 
+        if stop_point_file_name is not None:
+            geojson = self.get_json_file(stop_point_file_name)
+            data = self.get_json_file(dataset_file_name)
+            geojson = json.dumps(self.configure_jk_point_layer(geojson, data))
+            point_layer = QgsVectorLayer(geojson, layer_name + ' станции', 'ogr')
+
+            QgsProject.instance().addMapLayer(point_layer, False)
+            group.insertChildNode(0, QgsLayerTreeLayer(point_layer))
+
+
+    def configure_jk_point_layer(self, geojson, data):
+        for feature in geojson['features']:
+            name = feature['properties']['name']
+            for item in data:
+                if name.upper() == item['name'].upper():
+                    feature['properties']['Пасспоток'] = str(item['passp'])
+                    feature['properties']['Зашло'] = str(item['enter'])
+                    feature['properties']['Вышло'] = str(item['exit'])
+                    feature['properties']['Льготники'] = str(item['benefits'])
+                    feature['properties']['Коммерция'] = str(item['commerce'])
+        return geojson
+
+
+    def create_downloaded_layer_info_table(self, type, data):
+        self.excel_export_info_button.show()
+        self.table_widget_info.show()
+        column_index = 0
+        column_headers = []
+        if type == 'layer':
+            column_headers = ['Кол-во маршрутов', 'Кол-во вариантов', 'Кол-во с пассп.', 'Кол-во без пассп.', 'Общ. пассп.', 'Итог Соц', 'Итог Ком']
+        elif type == 'network':
+            column_headers = ['Кол-во маршрутов', 'Кол-во вариантов', 'Итог Соц', 'Итог Ком', 'Итог Общ.']
+        elif type == 'point':
+            column_headers = ['Кол-во маршрутов', 'Кол-во вариантов', 'Пасспоток', 'Кол-во Соц', 'Кол-во Ком']
+        else:
+            column_headers = ['Кол-во маршрутов', 'Кол-во вариантов']
+
+        self.table_widget_info.setRowCount(1)
+        self.table_widget_info.setColumnCount(len(column_headers))
+        self.table_widget_info.setHorizontalHeaderLabels(column_headers)
+
+        for value in data:
+            self.table_widget_info.setColumnWidth(column_index, 200)
+            item = QTableWidgetItem(str(value))
+            self.table_widget_info.setItem(0, column_index, item)
+            column_index += 1
+
+        dataset = {}
+        for i, item in enumerate(column_headers):
+            dataset[item] = data[i]
+
+        self.df = pd.DataFrame(
+            dataset,
+            index=[0]
+        )
+        self.status_general_label.setText('Готов к работе')
+
+    
+    def get_json_file(self, filepath):
+        with open(filepath, encoding='utf-8') as f:
+            data = json.load(f)
+        return data
+    

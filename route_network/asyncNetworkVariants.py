@@ -97,9 +97,6 @@ class AsyncNetworkVariants():
                         data[route].append(variant)
         return data
 
-    async def create_gay(self):
-        pass # GAY
-
     async def get_munic_data_from_outfit_plan(self):
         progress_value = 0
         

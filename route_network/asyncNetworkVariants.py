@@ -8,11 +8,23 @@ import pandas as pd
 from .tkp import TKP_API
 from .rnis import RNIS
 import os
+import math
+from pyproj import Transformer
 
 class AsyncNetworkVariants():
-
-    def __init__(self, dialog, regs, time, company, isSOBOP, date_from, date_to, period, delay=5):
-        self.array_regs = regs
+    def __init__(self, 
+                 dialog, 
+                 regs, 
+                 time, 
+                 company, 
+                 isSOBOP, 
+                 date_from, 
+                 date_to, 
+                 period, 
+                 munic_uuid=None, 
+                 delay=5
+             ):
+        self.array_regs = regs if regs else []
         self.date_from = date_from
         self.date_to = date_to
         self.delay = delay
@@ -33,6 +45,8 @@ class AsyncNetworkVariants():
         self.variant_pass_count = 0
         self.downloaded_layers = []
         self.period = period
+        self.munic_uuid = munic_uuid
+
 
 ######### RNIS #########
 
@@ -84,6 +98,167 @@ class AsyncNetworkVariants():
         return data
 
 
+    async def get_munic_data_from_outfit_plan(self):
+        progress_value = 0
+        
+        async with RNIS(login=self.login_rnis, password=self.password_rnis, token=self.token) as rnis:
+            self.dialog.munic_status_label.setText('Получаем маршруты...')
+            
+            route_list = await rnis.API.Geo.Route.to_list(
+                all_pages = True,
+                concurrency=5,
+                delay=10,
+                retries=7,
+                limit = 1000,
+                status=["1abd2f98-7845-11e7-be3f-3a4e0357cc4a"],
+                mun = self.munic_uuid,
+                response_data=["items/registration_number"]
+            )
+            route_list = [r['registration_number'] for r in route_list['payload'][0]['items']]
+            route_list = list(set(route_list))
+
+            self.dialog.munic_status_label.setText('Получаем план наряды...')
+            progress_value += 20
+            self.dialog.munic_progress_bar.setValue(progress_value)
+            
+            # print(json.dumps(route_list, indent=4, ensure_ascii=False))
+            
+            order_list = await rnis.API.Geo.Order.to_list(
+                all_pages = True,
+                concurrency=5,
+                delay=10,
+                retries=7,                                                    
+                date = self.date_from,
+                route_reg_number = route_list,
+                response_data=[]
+            )
+
+            order_uuids = [{
+                'order_uuid': item['uuid'],
+                'route_reg_number': item['route_registration_number'],
+                'route_name': item['route_name'],
+                'route_number': item['route_number'],
+                'route_uuid': item['route_uuid'],
+                } for p in order_list['payload'] for item in p['items']]
+
+            self.dialog.munic_status_label.setText('Получаем названия вариантов...')
+            progress_value += 20
+            self.dialog.munic_progress_bar.setValue(progress_value)
+
+            route_uuid = list(set([r['route_uuid'] for r in order_uuids]))
+            variant_name = {}
+            for r in route_uuid:
+                data = await rnis.API.Geo.Route.Variant.to_list(
+                    route_uuid=r,
+                    all_pages = True,
+                    retries=1,
+                    delay=5,
+                    response_data=[],
+                    print_error=True
+                )
+                for d in data['payload']:
+                    for item in d['items']:
+                        variant_name[item['uuid']] = item['name']
+
+            self.dialog.munic_status_label.setText('Получаем варианты...')
+            progress_value += 20
+            self.dialog.munic_progress_bar.setValue(progress_value)
+
+            variant_list = await rnis.API.Geo.Order.read(
+                uuid_list = [item['order_uuid'] for item in order_uuids],
+                all_pages = True,
+                retries=7,
+                delay=10
+            )
+
+            variant_list = [self.get_variant(item, variant_name) for item in variant_list['payload']]
+
+            variant_dict = {}
+
+            for variant in variant_list:
+                for k, v in variant.items():
+                    variant_dict[k] = variant_dict.get(k, [])
+                    variant_dict[k].extend(item for item in v if item not in variant_dict[k])
+
+            route_registry = []
+
+            self.dialog.munic_status_label.setText('Получаем тип ТС...')
+            progress_value += 20
+            self.dialog.munic_progress_bar.setValue(progress_value)
+
+            # for item in order_list:
+                # reg = item['route_registration_number']
+                # self.array_regs.append(reg)
+            registry = await rnis.API.Geo.Route.Registry.to_list(
+                reg_number=route_list,
+                response_data=['items/vehicle_type_uuid', 'items/route/uuid', 'items/vehicles_plan/vehicle_capacity_type_uuid'],
+                all_pages = True,
+                retries=5,
+                delay=5
+            )
+            for p in registry['payload']:
+                route_registry.append(p['items'])
+            
+            dictionary = await rnis.API.Dictionary.list_many(
+                dictionary=['vehicle_types', 'vehicle_capacity_types'],
+                print_error=True,
+                retries=3
+            )
+
+            dictionary_info = {}
+            for item in dictionary['payload'][0]['items']:
+                dictionary_info[item['key']] = {}
+                for d in item['documents']:
+                    dictionary_info[item['key']][d['uuid']] = d['name']
+            
+            registry_dict = {}
+
+            for item in route_registry:
+                for registry in item:
+                    new_key = registry['route']['uuid']
+                    vehicle_type = registry.get('vehicle_type_uuid', '')
+                    name = ''
+                    class_name = ''
+
+                    if vehicle_type != '':
+                        name = dictionary_info['vehicle_types'].get(vehicle_type)
+                    
+                    for i in registry['vehicles_plan']:
+                        class_name = dictionary_info['vehicle_capacity_types'].get(i['vehicle_capacity_type_uuid'], '')
+                        if class_name != '':
+                                    break
+                        
+                    if new_key not in registry_dict.keys():
+                        registry_dict[new_key] = {
+                            'name': name,
+                            'class_name': class_name if class_name is not None else ''
+                        }
+        
+            changed_order_data = []
+            for order in order_uuids:
+                del order['order_uuid']
+                if order not in changed_order_data:
+                    changed_order_data.append(order)
+
+            self.dialog.munic_status_label.setText('Подготавливаем варианты...')
+            progress_value += 20
+            self.dialog.progress.setValue(progress_value)
+
+            result_variants = {}
+            for r in changed_order_data:
+                u = r['route_uuid']
+                result_variants[u] = result_variants.get(u, {})
+                result_variants[u]['route_reg_number'] = r['route_reg_number']
+                result_variants[u]['route_number'] = r['route_number']
+                result_variants[u]['vehicle_type'] = registry_dict[r['route_uuid']]['name'] if r['route_uuid'] in registry_dict.keys() else ''
+                result_variants[u]['vehicle_class_type'] = registry_dict[r['route_uuid']]['class_name'] if r['route_uuid'] in registry_dict.keys() else ''
+                result_variants[u]['variants'] = variant_dict.get(u, [])
+                result_variants[u]['route_name'] = r.get('route_name', [])
+
+            result = [{'route_uuid': k} | v for k,v in result_variants.items()]
+            return result
+        
+
     async def get_data_from_outfit_plan(self, array_regs):
         progress_value = 0
         """Получаем варианты маршрутов из план нарядов."""
@@ -95,7 +270,7 @@ class AsyncNetworkVariants():
                 concurrency=5,
                 delay=10,
                 retries=7,                                                    
-                date = self.date_from,                                                                                                                                                         
+                date = self.date_from,
                 route_reg_number = array_regs,
                 response_data=[]
             )
@@ -533,6 +708,109 @@ class AsyncNetworkVariants():
             layer.triggerRepaint()
             print(f"Поле '{category_field_name}' не найдено в слое.")
 
+    
+    def interpolate_color(self, minval, maxval, val, color_palette):
+        """Interpolates a color from a color palette based on a value."""
+        val = max(minval, min(maxval, val))
+        norm_val = (val - minval) / (maxval - minval)
+        idx = int(norm_val * (len(color_palette) - 1))
+        return color_palette[idx]
+
+
+    def get_color_gradient(self):
+        """Creates a color gradient from green to red with transparency."""
+        color_palette = [QColor(0, 255, 0, 141), QColor(255, 255, 0, 141), QColor(255, 0, 0, 141)]
+        gradient = []
+        for i in range(101):
+            gradient.append(QColor(
+                color_palette[0].red() + i * (color_palette[2].red() - color_palette[0].red()) // 100,
+                color_palette[0].green() + i * (color_palette[2].green() - color_palette[0].green()) // 100,
+                color_palette[0].blue() + i * (color_palette[2].blue() - color_palette[0].blue()) // 100,
+                141  # Transparency
+            ))
+        return gradient
+    
+    def convert_coordinates(self, lon, lat):
+        x = (lon * 20037508.34) / 180
+        y = math.log(math.tan(((90 + lat) * math.pi) / 360)) / (math.pi / 180)
+        y = (y * 20037508.34) / 180
+        return [x, y]
+
+
+    def get_buffer_points_layer(self, layer, layer_name):
+        root = QgsProject.instance().layerTreeRoot()
+        group_name = 'Загруженность остановок'
+        values = set()
+        category_field_names = ['Зашло всего', 'Вышло всего']
+        group = next(
+            (child for child in root.children() if isinstance(child, QgsLayerTreeGroup) and child.name() == group_name),
+            None)
+
+        for feature in layer.getFeatures():
+            fields_names = feature.fields().names()
+            if all(name in fields_names for name in category_field_names):
+                sum_value = float(feature[category_field_names[0]]) + float(feature[category_field_names[1]])
+                values.add(sum_value)
+        
+        if not values:
+            return
+
+        buffer_layer = QgsVectorLayer('Polygon?crs=EPSG:3857', layer_name, 'memory')
+        provider = buffer_layer.dataProvider()
+        provider.addAttributes([
+            QgsField('Номер остановки', QVariant.Int),
+            QgsField('Зашло', QVariant.Double),
+            QgsField('Вышло', QVariant.Double),
+            QgsField('Пасспоток', QVariant.Double)
+            ])
+        
+        buffer_layer.updateFields()
+
+        min_value = min(values)
+        max_value = max(values)
+        stop_point_number = 1
+
+        radius_base = 500
+        buffer_features = []
+        for feature in layer.getFeatures():
+            fields_names = feature.fields().names()
+            if all(name in fields_names for name in category_field_names):
+                enter = float(feature[category_field_names[0]])
+                exit = float(feature[category_field_names[1]])
+                sum_value = enter + exit
+                point = feature.geometry().asPoint()
+                x2,y2 = self.convert_coordinates(point.x(), point.y())
+                swapped_point = QgsPointXY(x2, y2)
+
+                geom = QgsGeometry.fromPointXY(swapped_point)
+                buffer_geom = geom.buffer(radius_base * ((sum_value - min_value) / (max_value - min_value) + 1), 20)
+                buffer_feature = QgsFeature()
+                buffer_feature.setGeometry(buffer_geom)
+                buffer_feature.setAttributes([stop_point_number, enter, exit, sum_value])
+                buffer_features.append((buffer_feature, sum_value))
+            stop_point_number += 1
+        
+        provider.addFeatures([item[0] for item in buffer_features])
+        QgsProject.instance().addMapLayer(buffer_layer, False)
+
+        # Create categorized renderer
+        categories = []
+        for buffer_feature in buffer_features:
+            value = buffer_feature[1]
+            color = self.interpolate_color(min_value, max_value, value, self.get_color_gradient())
+            symbol = QgsFillSymbol.createSimple({'color': color.name(QColor.HexArgb), 'outline_color': '0,0,0,141'})
+            category = QgsRendererCategory(value, symbol, str(value))
+            categories.append(category)
+        
+        renderer = QgsCategorizedSymbolRenderer('Пасспоток', categories)
+        buffer_layer.setRenderer(renderer)
+        buffer_layer.triggerRepaint()
+
+        if group is None:
+            group = root.addGroup(group_name)
+        
+        group.insertChildNode(0, QgsLayerTreeLayer(buffer_layer))
+
 
     def add_layer_to_project(self, geojson, name, group_name, stop_points):
         root = QgsProject.instance().layerTreeRoot()
@@ -549,6 +827,11 @@ class AsyncNetworkVariants():
             points_dict = self.get_points_geojson_layer(geojson, stop_points)
             geojson_points = json.dumps(points_dict)
             new_layer_points = QgsVectorLayer(geojson_points + "|geometrytype=Point", name, "ogr")
+            group_name = f'Остановки-{group_name}'
+            self.get_buffer_points_layer(new_layer_points, new_layer_points.name())
+            group = next(
+            (child for child in root.children() if isinstance(child, QgsLayerTreeGroup) and child.name() == group_name),
+            None)
 
         self.resize_points(new_layer_points)
 
@@ -693,7 +976,7 @@ class AsyncNetworkVariants():
         return None
 
 
-    async def fetch_sobop_by_stop_point(self, geojson, reg, type_name):
+    async def fetch_sobop_by_stop_point(self, geojson, type_name):
         uuid = geojson['features'][0]['properties']['variant_uuid']
         data = await self.get_zagr_passp(route_type=type_name, var_uid=uuid)
         peregon_index = 1
@@ -711,18 +994,19 @@ class AsyncNetworkVariants():
                 current_kom += data[i]['Зашло ком'] - data[i]['Вышло ком']
 
                 feature = self.get_feature_by_pereon(geojson, stop_point_curr - 1)
-
-                feature['properties']['passp'] = current_passp
-                feature['properties']['kol_soc'] = current_soc
-                feature['properties']['kol_kom'] = current_kom
+                if feature is not None:
+                    feature['properties']['passp'] = current_passp
+                    feature['properties']['kol_soc'] = current_soc
+                    feature['properties']['kol_kom'] = current_kom
                 peregon_index += 1
             else:
                 while peregon_index != stop_point_curr:
                     feature = self.get_feature_by_pereon(geojson, peregon_index)
-
-                    feature['properties']['passp'] = current_passp
-                    feature['properties']['kol_soc'] = current_soc
-                    feature['properties']['kol_kom'] = current_kom
+                    
+                    if feature is not None:                   
+                        feature['properties']['passp'] = current_passp
+                        feature['properties']['kol_soc'] = current_soc
+                        feature['properties']['kol_kom'] = current_kom
                     peregon_index += 1
 
 
@@ -851,7 +1135,7 @@ class AsyncNetworkVariants():
             if self.isSOBOP and self.getStopPoint == False:
                 await self.fetch_sobop_by_hour(geojson)
             elif self.getStopPoint:
-                await self.fetch_sobop_by_stop_point(geojson, data_item['route_reg_number'], 'прямое')
+                await self.fetch_sobop_by_stop_point(geojson, 'прямое')
             self.downloaded_layers.append(geojson)
             self.add_layer_to_project(geojson, f'№{number}-{name}-{reg}-прямое', f'forwards-{self.company}', stop_points=forward_points_sobop)
 
@@ -864,7 +1148,7 @@ class AsyncNetworkVariants():
             if self.isSOBOP and self.getStopPoint == False:
                 await self.fetch_sobop_by_hour(geojson)
             elif self.getStopPoint:
-                await self.fetch_sobop_by_stop_point(geojson, data_item['route_reg_number'], 'обратное')
+                await self.fetch_sobop_by_stop_point(geojson, 'обратное')
             self.downloaded_layers.append(geojson)
             self.add_layer_to_project(geojson, f'№{number}-{name}-{reg}-обратное', f'reverses-{self.company}', stop_points=reverse_points_sobop)
 
@@ -886,7 +1170,7 @@ class AsyncNetworkVariants():
             for variant in route['variants']:
                 variants_count += 1
                 self.dialog.progress.setValue(percent)
-                percent += 100 / len(route['variants'])
+                percent += int(100 / len(route['variants']))
                 if percent >= len(route['variants']):
                     percent = 0
                 await self.distillation(variant, route)
@@ -936,6 +1220,32 @@ class AsyncNetworkVariants():
         
         self.get_result_layer_data(len(route_list), variants_count)
 
+    async def fetchMunicRoutes(self):
+        percent = 0
+        variants_count = 0
+        self.downloaded_layers = []
+        route_list = await self.get_munic_data_from_outfit_plan()
+        print(len(route_list))
+        return 
+        if self.isSOBOP:
+            self.sobop_data = await self.get_type_payment(array_regs=self.array_regs)
+
+        return
+        geojson = self.get_geojson()
+        for route in route_list:
+            self.dialog.status_general_label.setText('Отрисовка геометрии. ..')
+            for variant in route['variants']:
+                variants_count += 1
+                self.dialog.progress.setValue(percent)
+                percent += 100 / len(route['variants'])
+                if percent >= len(route['variants']):
+                    percent = 0
+                await self.distilation_by_layer(geojson, variant, route)
+        self.add_one_layer_to_project(geojson)
+        self.dialog.status_general_label.setText(f'Загружено маршрутов: {len(route_list)}')
+        
+        self.get_result_layer_data(len(route_list), variants_count)
+
 #######################################################################################################################################################
 
 
@@ -946,8 +1256,11 @@ class AsyncNetworkVariants():
             task = asyncio.create_task(self.fetchVariants())
         elif type == 2:
             task = asyncio.create_task(self.fetchLayerVariants())
+        elif type == 4:
+            task = asyncio.create_task(self.fetchMunicRoutes())
         else:
             task = asyncio.create_task(self.fetchVariants(isStopPoint=True))
         await task
+
 
 #######################################################################################################################################################

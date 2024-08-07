@@ -11,7 +11,7 @@ def to_list(**d):
     # Request.Body.pagination(json)     # Дефолтная пагинация
     # Request.Body.pagination(json, d.get('page'), d.get('limit')   # Пагинация по заданным параметрам
     # Request.Body.column_search(json, 'key', d.get('key')) # Поиск по колонке
-    Request.Body.payload(json, 'dictionary', d.get('dictionary')) # Добавить данные в вывод
+    Request.Body.payload(json, 'dictionary', {'key': d.get('dictionary')}) # Добавить данные в вывод
     # Request.Body.response_data(json)  # Дефолтный вывод атрибутов в списке ["items/uuid"]
     # Request.Body.response_data(json, d.get(response_data))  # Вывод атрибутов в списке заданные пользователем
     return json

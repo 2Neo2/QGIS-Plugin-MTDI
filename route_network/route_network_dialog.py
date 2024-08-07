@@ -23,10 +23,12 @@
 """
 
 import os
+import json
+import time
 import asyncio
 import pandas as pd
-import time
-import json
+import processing
+
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
 from qgis.core import *
@@ -35,8 +37,8 @@ from qgis.PyQt.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from shapely.geometry import box
-import processing
 from .asyncNetworkVariants import AsyncNetworkVariants
+from .munic import Munic
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
@@ -64,11 +66,14 @@ class RouteNetworkDialog(QtWidgets.QDialog, FORM_CLASS):
         self.df = None
         
         # Check boxes.
-        self.company_box.addItem("Выберите перевозчика...", None)
+        self.company_box.addItem("Выбери перевозчика...", None)
         self.company_box.addItem("МТА", 1)
         self.company_box.addItem("КП", 2)
 
-        self.time_box.addItem("Выберите время...", None)
+        self.munic_combo_box.addItem("Выбери г.о.", None)
+        asyncio.run(self.get_munic())
+
+        self.time_box.addItem("Выбери время...", None)
         self.time_box.addItem("весь день", 1)
         self.time_box.addItem("час пик", 2)
         self.time_box.addItem("вечерчние часы пик", 3)
@@ -101,14 +106,21 @@ class RouteNetworkDialog(QtWidgets.QDialog, FORM_CLASS):
         self.jk_layer_button.clicked.connect(self.jk_layer_button_clicked)
         self.jd_layer_button.clicked.connect(self.jd_layer_button_clicked)
         self.population_layer_button.clicked.connect(self.population_layer_button_clicked)
+        self.munic_button.clicked.connect(self.munic_button_tapped)
 
         # Date.
         self.date_from_edit.setDate(QDate.currentDate())
         self.date_to_edit.setDate(QDate.currentDate())
+        self.munic_time_box_from.setDate(QDate.currentDate())
+        self.munic_time_box_to.setDate(QDate.currentDate())
 
         # Table Widgets.
         self.table_widget.cellClicked.connect(self.cell_clicked)
 
+    async def get_munic(self):
+        async with Munic() as munic:
+            for k,v in munic.data.items():
+                self.munic_combo_box.addItem(k, v)
 
     def get_visible_layers(self, node):
         layers = []
@@ -650,7 +662,6 @@ class RouteNetworkDialog(QtWidgets.QDialog, FORM_CLASS):
 
     def get_data_layer_by_id(self, ids, layers):
         route_numbers = [ids['1route_peregon_num'], ids['2route_peregon_num']]
-        zagr = 0
         passp = 0
         total_soc = 0
         total_kom = 0
@@ -1001,3 +1012,19 @@ class RouteNetworkDialog(QtWidgets.QDialog, FORM_CLASS):
             data = json.load(f)
         return data
     
+
+    def munic_button_tapped(self):
+        self.munic_progress_bar.setValue(0)
+        self.munic_status_label.setText('Готов к работе')
+        munic_uuid = self.munic_combo_box.currentData()
+            
+        selected_date_from = self.munic_time_box_from.dateTime().date()
+        selected_date_to = self.munic_time_box_to.dateTime().date()
+
+        self.date_from = selected_date_from.toString("yyyy-MM-dd")
+        self.date_to = selected_date_to.toString('yyyy-MM-dd') if selected_date_to != QDate.currentDate() else None
+
+        self.period = [self.date_from + 'T00:00:00+03:00', self.date_to + 'T00:00:00+03:00'] if self.date_to is not None else None
+        self.network = AsyncNetworkVariants(self, None, None, None, self.munic_check_box.isChecked(), date_from=self.date_from, date_to=self.date_to, period=self.period, munic_uuid=munic_uuid)
+        asyncio.run(self.network.progress_bar(4))
+        self.progress.setValue(100)

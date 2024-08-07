@@ -24,6 +24,7 @@ def to_list(**d):
     Request.Body.filters(json, 'withProvisionStatuses', d.get('provision_status'), 'to_list') # фильтрация по статусам обеспечения возможные значения: - full - Обеспечен - none - Не обеспечен - partial - Не полностью обеспечен - overfull - Сверхобеспечен - partial_full - Перекрыт
     Request.Body.filters(json, 'withExecutionStatuses', d.get('execution_status'), 'to_list') # фильтрация по статусам выполнения возможные значения: - none - - - operational_defect - Оперативный брак - potential_fact_defect - Потенциальный фактический брак - fact_defect - Фактический брак - partial - Частичное выполнение - done - Выполнен
     Request.Body.filters(json, 'withProcessingStatuses', d.get('process_status'), 'to_list')  # фильтрация по статусам обработки возможные значения: - draft - оформляется - active - действует - ended - завершен - closed - закрыт - defect - брак планирования
+    Request.Body.filters(json, 'withCommunalMunicipalityUuid', d.get('municipal_uuid'), 'to_list')
 
     Request.Body.column_search(json, 'turn', d.get('turn'))     # Поиск по колонке "№ Выхода"
     Request.Body.column_search(json, 'number', d.get('number')) # Поиск по колонке "Номер"

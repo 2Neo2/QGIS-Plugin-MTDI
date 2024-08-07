@@ -97,6 +97,7 @@ class AsyncNetworkVariants():
                         data[route].append(variant)
         return data
 
+
     async def get_munic_data_from_outfit_plan(self):
         progress_value = 0
         

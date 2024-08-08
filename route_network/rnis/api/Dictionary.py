@@ -88,3 +88,12 @@ class Dictionary:
         url  = self.URL.get(self.URL.Dictionary.update)
         json = Filters.Dictionary.update(**dict(d, token=Request.token(self.__session)))
         return await self.__session.post(url=url, json=json)
+
+    
+    @Request.All_pages
+    @Request.Retry
+    async def unit(self, **d):
+        '''read | Dictionary.unit'''
+        url  = self.URL.get(self.URL.Dictionary.unit)
+        json = Filters.Dictionary.unit(**dict(d, token=Request.token(self.__session)))
+        return await self.__session.post(url=url, json=json)

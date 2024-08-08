@@ -119,8 +119,10 @@ class RouteNetworkDialog(QtWidgets.QDialog, FORM_CLASS):
 
     async def get_munic(self):
         async with Munic() as munic:
-            for k,v in munic.data.items():
-                self.munic_combo_box.addItem(k, v)
+            for name, uuid in munic.data.items():
+                self.munic_combo_box.addItem(name, uuid)
+        self.munic_combo_box.setStyleSheet("combobox-popup: 0;")
+        self.munic_combo_box.setMaxVisibleItems(10)
 
     def get_visible_layers(self, node):
         layers = []

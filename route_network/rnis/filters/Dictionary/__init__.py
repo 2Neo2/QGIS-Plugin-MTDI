@@ -7,6 +7,7 @@ from .read      import read
 from .structure import structure
 from .to_list   import to_list
 from .update    import update
+from .unit      import unit
 
 
 class Dictionary:
@@ -19,3 +20,4 @@ class Dictionary:
     structure = structure
     to_list   = to_list
     update    = update
+    unit      = unit

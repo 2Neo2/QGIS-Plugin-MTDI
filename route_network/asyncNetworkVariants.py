@@ -11,16 +11,17 @@ import os
 import math
 from pyproj import Transformer
 
+
 class AsyncNetworkVariants():
     def __init__(self, 
-                 dialog, 
-                 regs, 
-                 time, 
-                 company, 
-                 isSOBOP, 
-                 date_from, 
-                 date_to, 
-                 period, 
+                 dialog=None, 
+                 regs=None, 
+                 time=None, 
+                 company=None, 
+                 isSOBOP=None, 
+                 date_from=None, 
+                 date_to=None, 
+                 period=None, 
                  munic_uuid=None, 
                  delay=5
              ):
@@ -115,7 +116,7 @@ class AsyncNetworkVariants():
                 response_data=["items/registration_number"]
             )
             route_list = [r['registration_number'] for r in route_list['payload'][0]['items']]
-            route_list = list(set(route_list))
+            self.array_regs = list(set(route_list))
 
             self.dialog.munic_status_label.setText('Получаем план наряды...')
             progress_value += 20
@@ -129,7 +130,7 @@ class AsyncNetworkVariants():
                 delay=10,
                 retries=7,                                                    
                 date = self.date_from,
-                route_reg_number = route_list,
+                route_reg_number = self.array_regs,
                 response_data=[]
             )
 
@@ -139,6 +140,7 @@ class AsyncNetworkVariants():
                 'route_name': item['route_name'],
                 'route_number': item['route_number'],
                 'route_uuid': item['route_uuid'],
+                'carrier': item['carrier_uuid'],
                 } for p in order_list['payload'] for item in p['items']]
 
             self.dialog.munic_status_label.setText('Получаем названия вариантов...')
@@ -151,10 +153,11 @@ class AsyncNetworkVariants():
                 data = await rnis.API.Geo.Route.Variant.to_list(
                     route_uuid=r,
                     all_pages = True,
-                    retries=1,
+                    retries=7,
                     delay=5,
                     response_data=[],
-                    print_error=True
+                    error_print=True,
+                    limit=100
                 )
                 for d in data['payload']:
                     for item in d['items']:
@@ -190,18 +193,20 @@ class AsyncNetworkVariants():
                 # reg = item['route_registration_number']
                 # self.array_regs.append(reg)
             registry = await rnis.API.Geo.Route.Registry.to_list(
-                reg_number=route_list,
+                reg_number=self.array_regs,
                 response_data=['items/vehicle_type_uuid', 'items/route/uuid', 'items/vehicles_plan/vehicle_capacity_type_uuid'],
                 all_pages = True,
                 retries=5,
-                delay=5
+                delay=5,
+                limit=100,
             )
+
             for p in registry['payload']:
                 route_registry.append(p['items'])
             
             dictionary = await rnis.API.Dictionary.list_many(
                 dictionary=['vehicle_types', 'vehicle_capacity_types'],
-                print_error=True,
+                error_print=True,
                 retries=3
             )
 
@@ -242,7 +247,7 @@ class AsyncNetworkVariants():
 
             self.dialog.munic_status_label.setText('Подготавливаем варианты...')
             progress_value += 20
-            self.dialog.progress.setValue(progress_value)
+            
 
             result_variants = {}
             for r in changed_order_data:
@@ -254,8 +259,10 @@ class AsyncNetworkVariants():
                 result_variants[u]['vehicle_class_type'] = registry_dict[r['route_uuid']]['class_name'] if r['route_uuid'] in registry_dict.keys() else ''
                 result_variants[u]['variants'] = variant_dict.get(u, [])
                 result_variants[u]['route_name'] = r.get('route_name', [])
+                result_variants[u]['carrier'] = r.get('carrier')
 
             result = [{'route_uuid': k} | v for k,v in result_variants.items()]
+            self.dialog.munic_progress_bar.setValue(progress_value)
             return result
         
 
@@ -434,7 +441,7 @@ class AsyncNetworkVariants():
         return forwards, reverses
     
 
-    async def get_type_payment(self, **d):
+    async def get_type_payment(self):
         """Получаем инфо из СОБОП по типам оплаты: БК, СК, КОЛ-ВСЕГО"""
         company = 1 if self.company == 'МТА' else 2
         async with self.tkp(self.login_tkp, self.password_tkp) as tkp:
@@ -443,7 +450,7 @@ class AsyncNetworkVariants():
             card.parameters_update (
                 date_from = self.date_from,
                 date_to = self.date_to if self.date_to else self.date_from,
-                route_reg = d.get('array_regs', []),
+                route_reg = self.array_regs,
                 group_by = [2, 0, company]
             )
             data = await card.json
@@ -716,7 +723,6 @@ class AsyncNetworkVariants():
         idx = int(norm_val * (len(color_palette) - 1))
         return color_palette[idx]
 
-
     def get_color_gradient(self):
         """Creates a color gradient from green to red with transparency."""
         color_palette = [QColor(0, 255, 0, 141), QColor(255, 255, 0, 141), QColor(255, 0, 0, 141)]
@@ -729,6 +735,7 @@ class AsyncNetworkVariants():
                 141  # Transparency
             ))
         return gradient
+    
     
     def convert_coordinates(self, lon, lat):
         x = (lon * 20037508.34) / 180
@@ -919,6 +926,9 @@ class AsyncNetworkVariants():
                     feature_data["properties"]["type"],
                     feature_data["properties"]["class_type"],
                     feature_data["properties"]["date_from"],
+                    feature_data["properties"]["kol_soc"],
+                    feature_data["properties"]["kol_kom"],
+                    feature_data["properties"]["kol_total"]
                 ])
         
             geometry = QgsGeometry.fromPolylineXY([
@@ -1220,24 +1230,37 @@ class AsyncNetworkVariants():
         
         self.get_result_layer_data(len(route_list), variants_count)
 
+    @property
+    async def mta_list(self):
+        async with RNIS(login=self.login_rnis, password=self.password_rnis, token=self.token) as rnis:
+            carrier = await rnis.API.Dictionary.unit(
+                all_pages = True,
+                concurrency=5,
+                delay=10,
+                retries=1,
+                # limit = 1000,
+                name='Мострансавто'
+            )
+            carrier = [item['uuid'] for item in carrier['payload'][0]['items']]
+            return carrier
+
     async def fetchMunicRoutes(self):
         percent = 0
         variants_count = 0
         self.downloaded_layers = []
         route_list = await self.get_munic_data_from_outfit_plan()
-        print(len(route_list))
-        return 
+        
         if self.isSOBOP:
-            self.sobop_data = await self.get_type_payment(array_regs=self.array_regs)
-
-        return
+            self.sobop_data = await self.get_type_payment()
+        mta_list = await self.mta_list
         geojson = self.get_geojson()
         for route in route_list:
             self.dialog.status_general_label.setText('Отрисовка геометрии. ..')
+            self.company = "МТА" if route['carrier'] in mta_list else "КП"
             for variant in route['variants']:
                 variants_count += 1
                 self.dialog.progress.setValue(percent)
-                percent += 100 / len(route['variants'])
+                percent += int(100 / len(route['variants']))
                 if percent >= len(route['variants']):
                     percent = 0
                 await self.distilation_by_layer(geojson, variant, route)

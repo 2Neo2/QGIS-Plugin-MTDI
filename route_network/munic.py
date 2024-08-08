@@ -17,6 +17,12 @@ class Munic:
     async def __aexit__(self, *args, **kwargs):
         pass
 
+    def normolize_name(self, name):
+        replace_list = ['МО', 'Городской округ', 'в настоящее время - ', 'городской округ']
+        for replace in replace_list:
+            name = name.replace(replace, '')
+        return name.strip()
+
     @property
     async def get(self):
         async with RNIS(login=self.login_rnis, 
@@ -29,4 +35,11 @@ class Munic:
                 error_print=True,
             )
             dictionary = dictionary['payload'][0]['documents']
-            return {item['name']:item['uuid'] for item in dictionary}
+            dictionary = {
+                self.normolize_name(item['name']):item['uuid'] 
+                for item in dictionary
+            }
+            dictionary = dict(sorted(dictionary.items()))
+            return dictionary
+
+    

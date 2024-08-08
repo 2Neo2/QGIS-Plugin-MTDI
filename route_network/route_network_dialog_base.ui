@@ -28,7 +28,7 @@
       </font>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <property name="tabBarAutoHide">
       <bool>false</bool>
@@ -548,6 +548,15 @@
          <width>411</width>
          <height>31</height>
         </rect>
+       </property>
+       <property name="maxVisibleItems">
+        <number>1</number>
+       </property>
+       <property name="sizeAdjustPolicy">
+        <enum>QComboBox::AdjustToMinimumContentsLengthWithIcon</enum>
+       </property>
+       <property name="minimumContentsLength">
+        <number>5</number>
        </property>
       </widget>
       <widget class="QLabel" name="label">

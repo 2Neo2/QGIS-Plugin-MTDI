@@ -355,6 +355,7 @@ class Method:
         meta      = 'com.rnis.dictionary.action.meta'          # Получение мета-информации справочника'''
         off_day   = 'com.rnis.dictionary.action.off_day.get'   # Получение выходного дня'''
         structure = 'com.rnis.dictionary.action.structure'     # Получение структуры справочников'''
+        unit    = 'com.rnis.grpc-proxy.action.units.get.units' # Получение информации о перевозчиках'''
 
     class Garbage:
         '''Сервис ТКО'''
